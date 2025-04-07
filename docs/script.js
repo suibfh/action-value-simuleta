@@ -111,7 +111,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 activeBuffs[targetIdx].push({
                   type: effect.type,
                   value: effect.value,
-                  remaining: parseInt(effect.duration, 10), actionCount: 0, pending: true
+                  remaining: parseInt(effect.duration, 10), actionCount: 0, pending: true, appliedTurn: turn
                 });
               } else if (effect.type === "valueup" || effect.type === "valuedown") {
                 const value = parseInt(effect.value, 10) || 0;
@@ -127,17 +127,20 @@ window.addEventListener("DOMContentLoaded", () => {
           
           
           
-                    // アクション時のみ、バフのターン数を減らす
+                              // アクション時のみ、バフのターン数を減らす
           activeBuffs[i] = activeBuffs[i]
             .map(buff => {
-              if (buff.pending) {
-                buff.pending = false; // 最初のアクションではカウントせず、pending解除
-              } else {
-                buff.actionCount += 1; // 次のアクションからカウント開始
+              if (turn > buff.appliedTurn) {
+                if (buff.pending) {
+                  buff.pending = false; // 最初のアクションではカウントせず、pending解除
+                } else {
+                  buff.actionCount += 1; // 次のアクションからカウント開始
+                }
               }
               return buff;
             })
             .filter(buff => buff.actionCount < buff.remaining);
+
 
 currentPoints[i] = 0; // ✅ 修正：正しくリセット
         }
