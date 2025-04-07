@@ -1,40 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Agility Action Simulator (Test)</title>
-  <meta http-equiv="Permissions-Policy" content="">
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Action Value Simulator</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Agility Action Simulator (Test)</h1>
+  <h1>Action Value Simulator</h1>
 
-  <h2>Unit Settings (up to 10)</h2>
-  <div id="unit-inputs">
-    <table>
+  <section id="unit-inputs">
+    <h2>Unit Agility Input</h2>
+    <form id="agility-form">
+      <div class="unit-grid">
+        <!-- Generate 10 unit inputs -->
+        <script>
+          for (let i = 1; i <= 10; i++) {
+            document.write(\`
+              <div class="unit-block">
+                <label for="agility-\${i}">Unit \${i} Agility:</label>
+                <input type="number" id="agility-\${i}" name="agility-\${i}" min="1" required />
+              </div>
+            \`);
+          }
+        </script>
+      </div>
+      <button type="submit">Run Simulation</button>
+    </form>
+  </section>
+
+  <section id="simulation-output">
+    <h2>Simulation Results</h2>
+    <table id="result-table">
       <thead>
-        <tr><th>#</th><th>Name</th><th>Agility</th></tr>
+        <tr>
+          <th>Turn</th>
+          <th>Unit 1</th><th>Unit 2</th><th>Unit 3</th><th>Unit 4</th><th>Unit 5</th>
+          <th>Unit 6</th><th>Unit 7</th><th>Unit 8</th><th>Unit 9</th><th>Unit 10</th>
+        </tr>
       </thead>
-      <tbody>
-<tr><td>1</td><td><input type='text' value='1' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-<tr><td>2</td><td><input type='text' value='2' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-<tr><td>3</td><td><input type='text' value='3' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-<tr><td>4</td><td><input type='text' value='4' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-<tr><td>5</td><td><input type='text' value='5' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-<tr><td>6</td><td><input type='text' value='6' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-<tr><td>7</td><td><input type='text' value='7' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-<tr><td>8</td><td><input type='text' value='8' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-<tr><td>9</td><td><input type='text' value='9' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-<tr><td>10</td><td><input type='text' value='10' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
-      </tbody>
+      <tbody></tbody>
     </table>
-  </div>
+  </section>
 
-  <button id="run-sim">Run Simulation</button>
-
-  <div id="results"></div>
-
-  <script src="simulator.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

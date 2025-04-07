@@ -1,3 +1,32 @@
-.buffed-cell {
-  background-color: #fff176 !important;
+
+body {
+  font-family: sans-serif;
+  padding: 1rem;
+  max-width: 1000px;
+  margin: auto;
+}
+.unit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.unit-block label {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.4rem;
+  text-align: center;
+}
+.action {
+  font-weight: bold;
+  text-decoration: underline;
+  background-color: #e0ffe0;
 }
