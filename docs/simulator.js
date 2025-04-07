@@ -1,82 +1,82 @@
-
-document.getElementById('run-sim').addEventListener('click', function () {
-  const unitNames = [...document.querySelectorAll('.unit-name')].map(input => input.value || 'Unit');
-  const unitAgis = [...document.querySelectorAll('.unit-agi')].map(input => parseInt(input.value) || 0);
-
+// ※ ステージ6の中核処理（一部抜粋）：演算ごとにバフ／デバフ／行動値修正を反映
+function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
   const units = unitNames.map((name, i) => ({
     name,
-    agi: unitAgis[i],
-    actionValue: 0,
-    actedTurns: [],
+    baseAgi: unitAgis[i],
     currentAgi: unitAgis[i],
+    actionValue: 0,
+    agiBuffs: [],
+    actedTurns: [],
     actionLog: []
   }));
 
   const resultTable = [];
-  const totalIterations = 50;
-  const effects = [];
 
-  for (let t = 1; t <= totalIterations; t++) {
+  for (let turn = 1; turn <= totalIterations; turn++) {
+    // 効果適用（行動時発動 → 次演算で反映のためこのタイミングで処理）
+    effects.filter(e => e.turn === turn - 1).forEach(e => {
+      const targets = e.target === 'all' ? [...Array(units.length).keys()] : [parseInt(e.target) - 1];
+      targets.forEach(t => {
+        if (e.type === 'agi_buff' || e.type === 'slow') {
+          units[t].agiBuffs.push({
+            value: e.value,
+            remaining: e.duration
+          });
+        }
+        if (e.type === 'action_up' || e.type === 'action_down') {
+          units[t].actionValue += e.value;
+        }
+      });
+    });
+
+    // 敏捷バフ／重圧集計（現在敏捷の再計算）
     units.forEach(unit => {
-      const gain = Math.floor(unit.currentAgi + 100);
-      unit.actionValue += gain;
+      const totalBuff = unit.agiBuffs.reduce((sum, b) => sum + b.value, 0);
+      unit.currentAgi = Math.floor(unit.baseAgi * (1 + totalBuff / 100));
     });
 
-    const actedThisTurn = [];
-    const actedValues = {};
-
-    units.forEach((unit, idx) => {
-      if (unit.actionValue >= 1000) {
-        actedThisTurn.push({ idx, value: unit.actionValue });
-        actedValues[idx] = unit.actionValue;
-      }
+    // 行動値加算（敏捷 + 100）
+    units.forEach(unit => {
+      unit.actionValue += Math.floor(unit.currentAgi + 100);
     });
 
-    actedThisTurn.sort((a, b) => b.value - a.value || a.idx - b.idx);
-    actedThisTurn.forEach(a => {
-      units[a.idx].actedTurns.push(t);
-    });
+    // 行動判定
+    const acted = units
+      .map((u, i) => ({ idx: i, val: u.actionValue }))
+      .filter(u => u.val >= 1000)
+      .sort((a, b) => b.val - a.val || a.idx - b.idx);
 
-    resultTable.push(units.map((unit, idx) => ({
-      name: unit.name,
-      agi: unit.currentAgi,
-      value: actedValues.hasOwnProperty(idx) ? actedValues[idx] : unit.actionValue,
-      acted: actedValues.hasOwnProperty(idx)
-    })));
-
-    actedThisTurn.forEach(a => {
+    acted.forEach(a => {
+      units[a.idx].actedTurns.push(turn);
       units[a.idx].actionValue = 0;
     });
+
+    // 敏捷バフの持続ターン減少
+    units.forEach(unit => {
+      unit.agiBuffs.forEach(buff => buff.remaining--);
+      unit.agiBuffs = unit.agiBuffs.filter(buff => buff.remaining > 0);
+    });
+
+    // ログ保存
+    resultTable.push(units.map((u, i) => ({
+      name: u.name,
+      agi: u.currentAgi,
+      value: u.actionValue,
+      acted: acted.some(a => a.idx === i)
+    })));
   }
 
+  return resultTable;
+}
+
+document.getElementById('run-sim').addEventListener('click', function () {
+  const unitNames = [...document.querySelectorAll('.unit-name')].map(input => input.value || 'Unit');
+  const unitAgis = [...document.querySelectorAll('.unit-agi')].map(input => parseInt(input.value) || 0);
   const results = document.getElementById('results');
-  let html = '<h2>Simulation Result (No Buffs)</h2><table><thead><tr><th>Turn</th>';
-  units.forEach(u => {
-    html += `<th>${u.name}</th>`;
-  });
-  html += '</tr></thead><tbody>';
+  const totalIterations = 50;
+  let effects = [];
 
-  html += '<tr><td>AGI</td>';
-  units.forEach(u => {
-    html += `<td>${u.currentAgi}</td>`;
-  });
-  html += '</tr>';
-
-  resultTable.forEach((row, turnIdx) => {
-    html += `<tr><td>${turnIdx + 1}</td>`;
-    row.forEach((cell, unitIdx) => {
-      if (cell.acted) {
-        html += `<td><span class="acted" data-unit="${unitIdx}" data-turn="${turnIdx + 1}" data-value="${cell.value}">${cell.value} 🟢</span></td>`;
-      } else {
-        html += `<td>${cell.value}</td>`;
-      }
-    });
-    html += '</tr>';
-  });
-
-  html += '</tbody></table>';
-  results.innerHTML = html;
-
+  // Build UI popup
   const modal = document.createElement('div');
   modal.id = 'effect-modal';
   modal.innerHTML = `
@@ -99,7 +99,7 @@ document.getElementById('run-sim').addEventListener('click', function () {
         <input type="number" id="effect-value" />
       </div>
       <div>
-        <label>持続ターン:</label>
+        <label>持続演算:</label>
         <input type="number" id="effect-duration" />
       </div>
       <button id="save-effect">保存</button>
@@ -108,60 +108,72 @@ document.getElementById('run-sim').addEventListener('click', function () {
   `;
   document.body.appendChild(modal);
 
-  let selectedType = '';
-  let selectedTarget = '';
-  let currentSpan = null;
+  const outputAndBind = () => {
+    const resultTable = runSimulation(unitNames, unitAgis, effects, totalIterations);
+    let html = '<h2>Simulation Result (Effects Applied)</h2><table><thead><tr><th>演算</th>';
+    unitNames.forEach(name => html += `<th>${name}</th>`);
+    html += '</tr></thead><tbody>';
 
-  document.querySelectorAll('.acted').forEach(span => {
-    span.addEventListener('click', () => {
-      currentSpan = span;
-      selectedType = '';
-      selectedTarget = '';
-      document.getElementById('modal-title').innerText =
-        `🛠 効果設定 - ユニット${parseInt(span.dataset.unit)+1} / ターン${span.dataset.turn}`;
-      modal.style.display = 'flex';
-      modal.dataset.unit = span.dataset.unit;
-      modal.dataset.turn = span.dataset.turn;
+    html += '<tr><td>AGI</td>';
+    unitAgis.forEach((_, i) => html += `<td>${unitAgis[i]}</td>`);
+    html += '</tr>';
+
+    resultTable.forEach((row, t) => {
+      html += `<tr><td>${t + 1}</td>`;
+      row.forEach((cell, idx) => {
+        html += `<td${cell.acted ? ` class="acted-cell" data-unit="${idx}" data-turn="${t + 1}"` : ''}>${cell.value}${cell.acted ? ' 🟢' : ''}</td>`;
+      });
+      html += '</tr>';
     });
-  });
 
-  document.getElementById('close-modal').addEventListener('click', () => {
-    modal.style.display = 'none';
-  });
+    html += '</tbody></table>';
+    results.innerHTML = html;
 
-  modal.querySelectorAll('.type-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedType = btn.dataset.type;
-      modal.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
+    document.querySelectorAll('.acted-cell').forEach(cell => {
+      cell.addEventListener('click', () => {
+        const unit = cell.dataset.unit;
+        const turn = cell.dataset.turn;
+        let selectedType = '';
+        let selectedTarget = '';
+        document.getElementById('modal-title').innerText = `効果設定 - ユニット${parseInt(unit) + 1} / 演算${turn}`;
+        modal.dataset.unit = unit;
+        modal.dataset.turn = turn;
+        modal.style.display = 'flex';
+
+        modal.querySelectorAll('.type-btn').forEach(btn => {
+          btn.onclick = () => {
+            selectedType = btn.dataset.type;
+            modal.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+          };
+        });
+
+        modal.querySelectorAll('.target-btn').forEach(btn => {
+          btn.onclick = () => {
+            selectedTarget = btn.dataset.target;
+            modal.querySelectorAll('.target-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+          };
+        });
+
+        document.getElementById('save-effect').onclick = () => {
+          const val = parseInt(document.getElementById('effect-value').value);
+          const dur = parseInt(document.getElementById('effect-duration').value);
+          if (selectedType && selectedTarget && val && dur) {
+            let actualValue = val;
+            if (selectedType === 'slow' || selectedType === 'action_down') actualValue = -Math.abs(val);
+            effects.push({ turn: parseInt(turn), caster: parseInt(unit) + 1, type: selectedType, target: selectedTarget, value: actualValue, duration: dur });
+            modal.style.display = 'none';
+            outputAndBind();
+          } else {
+            alert("全項目を入力・選択してください");
+          }
+        };
+      });
     });
-  });
 
-  modal.querySelectorAll('.target-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedTarget = btn.dataset.target;
-      modal.querySelectorAll('.target-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-    });
-  });
+    document.getElementById('close-modal').onclick = () => modal.style.display = 'none';
+  };
 
-  document.getElementById('save-effect').addEventListener('click', () => {
-    const val = parseInt(document.getElementById('effect-value').value);
-    const dur = parseInt(document.getElementById('effect-duration').value);
-    const turn = parseInt(modal.dataset.turn);
-    const unit = parseInt(modal.dataset.unit);
-    if (selectedType && selectedTarget && val && dur) {
-      let actualValue = val;
-      if (selectedType === 'slow') actualValue = -Math.abs(val);
-      if (selectedType === 'action_down') actualValue = -Math.abs(val);
-      effects.push({ turn, caster: unit + 1, type: selectedType, target: selectedTarget, value: actualValue, duration: dur });
-      currentSpan.style.backgroundColor = '#ffd';
-      currentSpan.title = `${selectedType}, ${selectedTarget}, ${actualValue}, ${dur}`;
-      modal.style.display = 'none';
-    } else {
-      alert("すべての項目を入力・選択してください");
-    }
-  });
-
-  console.log("Effects set:", effects);
+  outputAndBind();
 });
