@@ -127,11 +127,11 @@ window.addEventListener("DOMContentLoaded", () => {
           
           
           
-                                        // アクション時のみ、バフのターン数を減らす
+                                                  // アクション時のみ、バフのターン数を減らす
           if (actedUnits.includes(i)) {
             activeBuffs[i] = activeBuffs[i]
               .map(buff => {
-                if (turn > buff.appliedTurn) {
+                if (turn >= buff.appliedTurn) {
                   if (buff.pending) {
                     buff.pending = false; // 最初のアクションではカウントせず、pending解除
                   } else {
@@ -141,6 +141,8 @@ window.addEventListener("DOMContentLoaded", () => {
                 return buff;
               })
               .filter(buff => buff.actionCount < buff.remaining);
+          }
+
           }
 
 
