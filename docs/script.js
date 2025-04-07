@@ -6,7 +6,7 @@ window.addEventListener("DOMContentLoaded", () => {
     block.className = "unit-block";
     block.innerHTML = `
       <label for="agility-${i}">Unit ${i} Agility:</label>
-      <input type="number" id="agility-${i}" name="agility-${i}" min="1" required />
+      <input type="number" id="agility-${i}" name="agility-${i}" min="0" />
     `;
     container.appendChild(block);
   }
