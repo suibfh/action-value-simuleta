@@ -50,6 +50,7 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
       units[a.idx].actedTurns.push(turn);
       units[a.idx].__actedValue = units[a.idx].actionValue;
       units[a.idx].actionValue = 0;
+      setTimeout(() => { units[a.idx].__actedValue = undefined }, 0);
     });
 
     // 敏捷バフの持続ターン減少
