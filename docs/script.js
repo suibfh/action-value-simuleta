@@ -85,7 +85,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
       for (let i = 0; i < 10; i++) {
         const cell = document.createElement("td");
-        cell.textContent = currentPoints[i];
+        
+    let baseAgility = agilities[i];
+    let modifiedAgility = baseAgility;
+    for (const buff of activeBuffs[i]) {
+      if (buff.type === "buff") {
+        modifiedAgility += Math.floor(baseAgility * (+buff.value / 100));
+      } else if (buff.type === "pressure") {
+        modifiedAgility -= Math.floor(baseAgility * (+buff.value / 100));
+      }
+    }
+
+    const agilityNote = (modifiedAgility !== baseAgility) ? ` <small>(AGI ${baseAgility}→${modifiedAgility})</small>` : "";
+    const avNote = actionValueModifiers[turn]?.[i] ? ` <small>(+${actionValueModifiers[turn][i]})</small>` : "";
+
+    cell.innerHTML = currentPoints[i] + agilityNote + avNote;
+    
         if (actedIdx.includes(i)) {
           const unitIndex = i + 1;
           const key = `unit${unitIndex}-turn${turn}`;
