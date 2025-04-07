@@ -108,3 +108,22 @@ function saveEffect() {
 
   closeModal();
 }
+
+
+// 効果保存用のグローバルデータ構造: { "unit-turn": {type, value, duration, targets} }
+const effectDataMap = {};
+
+function saveEffect() {
+  const type = document.getElementById("effect-type").value;
+  const value = document.getElementById("effect-value").value;
+  const duration = document.getElementById("effect-duration").value;
+  const targets = Array.from(document.querySelectorAll('input[name="targets"]:checked')).map(cb => cb.value);
+
+  const key = `unit${currentUnit}-turn${currentTurn}`;
+  effectDataMap[key] = { type, value, duration, targets };
+
+  console.log(`Saved for ${key}`);
+  console.log(effectDataMap[key]);
+
+  closeModal();
+}
