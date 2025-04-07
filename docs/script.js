@@ -169,4 +169,5 @@ function saveEffect() {
   console.log(effectDataMap[key]);
 
   closeModal();
+  document.getElementById('agility-form').dispatchEvent(new Event('submit'));
 }
