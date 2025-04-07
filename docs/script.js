@@ -126,15 +126,19 @@ window.addEventListener("DOMContentLoaded", () => {
           cell.addEventListener("click", () => openModal(unitIndex, turn));
           
           
+          
           // アクション時のみ、バフのターン数を減らす
-          activeBuffs[i] = activeBuffs[i].map(buff => {
-            if (buff.pending) {
-              buff.pending = false; // 最初のアクションではカウントせず、pending解除
-            } else {
-              buff.actionCount += 1; // 次のアクションからカウント開始
-            }
-            return buff;
-          }).filter(buff => buff.actionCount < buff.remaining);
+          activeBuffs[i] = activeBuffs[i]
+            .map(buff => {
+              if (buff.pending) {
+                buff.pending = false; // 最初のアクションではカウントせず、pending解除
+              } else {
+                buff.actionCount += 1; // 次のアクションからカウント開始
+              }
+              return buff;
+            })
+            .filter(buff => buff.actionCount < buff.remaining);
+
 
             buff.actionCount += 1;
             return buff;
