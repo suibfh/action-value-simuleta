@@ -127,7 +127,7 @@ window.addEventListener("DOMContentLoaded", () => {
           
           
           
-                                                            // アクション時のみ、バフのターン数を減らす
+                                                                      // アクション時のみ、バフのターン数を減らす
           if (actedUnits.includes(i)) {
             activeBuffs[i] = activeBuffs[i]
               .map(buff => {
@@ -140,7 +140,11 @@ window.addEventListener("DOMContentLoaded", () => {
                 }
                 return buff;
               })
-              .filter(buff => buff.actionCount < buff.remaining);
+              .filter(buff => {
+                return buff.actionCount < buff.remaining;
+              });
+          }
+
           }
 
           }
