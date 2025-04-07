@@ -58,3 +58,6 @@ button {
   width: 400px;
   max-width: 90%;
 }
+.buffed-cell {
+  background-color: #fff176 !important;
+}
