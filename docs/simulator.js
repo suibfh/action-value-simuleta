@@ -83,6 +83,7 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
       name: u.name,
       agi: u.currentAgi,
       value: u.__actedValue !== undefined ? u.__actedValue : u.actionValue,
+      agiBuffed: u.agiBuffs.length > 0,
       acted: acted.some(a => a.idx === i)
     })));
   }
@@ -134,12 +135,13 @@ document.getElementById('run-sim').addEventListener('click', function () {
     unitNames.forEach(name => html += `<th>${name}</th>`);
     html += '</tr></thead><tbody>';
     html += '<tr><td>AGI</td>';
-    unitAgis.forEach(val => html += `<td>${val}</td>`);
+    unitAgis.forEach(val => html += `<td class="` + cellClass + `">${val}</td>`);
     html += '</tr>';
     resultTable.forEach((row, t) => {
       html += `<tr><td>${t + 1}</td>`;
       row.forEach((cell, idx) => {
-        html += `<td${cell.acted ? ` class="acted-cell" data-unit="${idx}" data-turn="${t + 1}"` : ''}>${cell.value}${cell.acted ? ' 🟢' : ''}</td>`;
+        const cellClass = (cell.acted ? 'acted-cell' : '') + (cell.agiBuffed ? ' buffed-cell' : '');
+        html += `<td class="` + cellClass + `"${cell.acted ? ` class="acted-cell" data-unit="${idx}" data-turn="${t + 1}"` : ''}>${cell.value}${cell.acted ? ' 🟢' : ''}</td>`;
       });
       html += '</tr>';
     });
@@ -158,8 +160,23 @@ document.getElementById('run-sim').addEventListener('click', function () {
         modal.style.display = 'flex';
 
         modal.querySelectorAll('.type-btn').forEach(btn => {
+  document.getElementById('effect-value').parentElement.style.display = 'block';
+  document.getElementById('effect-duration').parentElement.style.display = 'block';
           btn.onclick = () => {
             selectedType = btn.dataset.type;
+  const valueField = document.getElementById('effect-value').parentElement;
+  const durField = document.getElementById('effect-duration').parentElement;
+
+  if (selectedType === 'slow') {
+    valueField.style.display = 'none';
+    durField.style.display = 'block';
+  } else if (selectedType === 'agi_buff') {
+    valueField.style.display = 'block';
+    durField.style.display = 'block';
+  } else {
+    valueField.style.display = 'block';
+    durField.style.display = 'none';
+  }
             modal.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
           };
@@ -176,6 +193,7 @@ document.getElementById('run-sim').addEventListener('click', function () {
           const dur = parseInt(document.getElementById('effect-duration').value);
           if (selectedType && selectedTarget && val && dur) {
             let actualValue = val;
+  if (selectedType === 'slow') actualValue = -30;
             if (selectedType === 'slow' || selectedType === 'action_down') actualValue = -Math.abs(val);
             effects.push({ turn: parseInt(turn), caster: parseInt(unit) + 1, type: selectedType, target: selectedTarget, value: actualValue, duration: dur });
             modal.style.display = 'none';
