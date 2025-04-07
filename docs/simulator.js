@@ -16,7 +16,6 @@ document.getElementById('run-sim').addEventListener('click', function () {
   const totalIterations = 50;
 
   for (let t = 1; t <= totalIterations; t++) {
-    // Add agility + 100
     units.forEach(unit => {
       const gain = Math.floor(unit.currentAgi + 100);
       unit.actionValue += gain;
@@ -25,23 +24,18 @@ document.getElementById('run-sim').addEventListener('click', function () {
     const actedThisTurn = [];
     const actedValues = {};
 
-    // Determine who acts
     units.forEach((unit, idx) => {
       if (unit.actionValue >= 1000) {
         actedThisTurn.push({ idx, value: unit.actionValue });
-        actedValues[idx] = unit.actionValue; // store original value before reset
+        actedValues[idx] = unit.actionValue;
       }
     });
 
-    // Sort action order
     actedThisTurn.sort((a, b) => b.value - a.value || a.idx - b.idx);
-
-    // Mark acted
     actedThisTurn.forEach(a => {
       units[a.idx].actedTurns.push(t);
     });
 
-    // Record values before reset
     resultTable.push(units.map((unit, idx) => ({
       name: unit.name,
       agi: unit.currentAgi,
@@ -49,7 +43,6 @@ document.getElementById('run-sim').addEventListener('click', function () {
       acted: actedValues.hasOwnProperty(idx)
     })));
 
-    // Reset after logging
     actedThisTurn.forEach(a => {
       units[a.idx].actionValue = 0;
     });
@@ -62,6 +55,13 @@ document.getElementById('run-sim').addEventListener('click', function () {
     html += `<th>${u.name}</th>`;
   });
   html += '</tr></thead><tbody>';
+
+  // Agility Row
+  html += '<tr><td>AGI</td>';
+  units.forEach(u => {
+    html += `<td>${u.currentAgi}</td>`;
+  });
+  html += '</tr>';
 
   resultTable.forEach((row, idx) => {
     html += `<tr><td>${idx + 1}</td>`;
