@@ -11,6 +11,22 @@ window.addEventListener("DOMContentLoaded", () => {
     container.appendChild(block);
   }
 
+  const effectTypeField = document.getElementById("effect-type");
+  const durationField = document.getElementById("effect-duration");
+
+  if (effectTypeField) {
+    effectTypeField.addEventListener("change", () => {
+      const type = effectTypeField.value;
+      if (type === "valueup" || type === "valuedown") {
+        durationField.value = "1";
+        durationField.disabled = true;
+      } else {
+        durationField.disabled = false;
+        durationField.value = "";
+      }
+    });
+  }
+
   document.getElementById("agility-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const agilities = [];

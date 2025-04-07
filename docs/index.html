@@ -38,6 +38,15 @@
       display: block;
       margin-top: 0.5rem;
     }
+    .unit-checkboxes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-top: 0.25rem;
+    }
+    .unit-checkboxes label {
+      width: 2rem;
+    }
   </style>
 </head>
 <body>
@@ -70,7 +79,7 @@
     <h3>Set Effect</h3>
     <form id="effect-form">
       <label>Effect Type:
-        <select name="effect-type">
+        <select name="effect-type" id="effect-type">
           <option value="">None</option>
           <option value="buff">Agility Buff</option>
           <option value="pressure">Pressure</option>
@@ -78,19 +87,23 @@
           <option value="valuedown">Action Value Down</option>
         </select>
       </label>
-      <label>Target:
-        <select name="effect-target">
-          <option value="ally-single">Ally - Single</option>
-          <option value="ally-all">Ally - All</option>
-          <option value="enemy-single">Enemy - Single</option>
-          <option value="enemy-all">Enemy - All</option>
-        </select>
-      </label>
+
+      <label>Targets:</label>
+      <div class="unit-checkboxes">
+        <script>
+          for (let i = 1; i <= 10; i++) {
+            document.write(
+              '<label><input type="checkbox" name="targets" value="' + i + '"/>' + i + '</label>'
+            );
+          }
+        </script>
+      </div>
+
       <label>Effect Value:
-        <input type="number" name="effect-value" />
+        <input type="number" name="effect-value" id="effect-value" />
       </label>
       <label>Duration (turns):
-        <input type="number" name="effect-duration" min="1" />
+        <input type="number" name="effect-duration" id="effect-duration" min="1" />
       </label>
       <button type="button" onclick="closeModal()">Close</button>
     </form>
