@@ -1,4 +1,3 @@
-
 function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
   const units = unitNames.map((name, i) => ({
     name,
@@ -56,20 +55,17 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
       u.actionValue = 0;
       if (u.agiBuffs) {
         let counted = false;
-      u.agiBuffs.forEach(buff => {
-        if (buff.appliedAt < turn) {
-          if (buff.activated && buff.actedCountStarted && !counted) {
-            buff.actedCount++;
-            counted = true;
-          } else if (buff.activated && !buff.actedCountStarted) {
-            buff.actedCountStarted = true;
-            counted = true;
-          } else if (!buff.activated) {
-            buff.activated = true;
-          }
-            if (buff.activated && buff.actedCountStarted) buff.actedCount++;
-            else if (buff.activated) buff.actedCountStarted = true;
-            else buff.activated = true;
+        u.agiBuffs.forEach(buff => {
+          if (buff.appliedAt < turn) {
+            if (buff.activated && buff.actedCountStarted && !counted) {
+              buff.actedCount++;
+              counted = true;
+            } else if (buff.activated && !buff.actedCountStarted) {
+              buff.actedCountStarted = true;
+              counted = true;
+            } else if (!buff.activated) {
+              buff.activated = true;
+            }
           }
         });
       }
@@ -134,22 +130,24 @@ document.getElementById('run-sim').addEventListener('click', function () {
     let html = '<h2>Simulation Result (Effects Applied)</h2><table><thead><tr><th>演算</th>';
     unitNames.forEach(name => html += `<th>${name}</th>`);
     html += '</tr></thead><tbody>';
+
     html += '<tr><td>AGI</td>';
-    unitAgis.forEach(val => let cellClass = "";
-        if (cell.acted) cellClass += "acted-cell ";
-        if (cell.agiBuffed) cellClass += "buffed-cell";
-        html += '<td class="' + cellClass.trim() + '">'>${val}</td>`);
+    unitAgis.forEach((val, i) => {
+      const cell = resultTable[0][i];
+      let cellClass = '';
+      if (cell.acted) cellClass += 'acted-cell ';
+      if (cell.agiBuffed) cellClass += 'buffed-cell';
+      html += `<td class="${cellClass.trim()}">${val}</td>`;
+    });
     html += '</tr>';
+
     resultTable.forEach((row, t) => {
       html += `<tr><td>${t + 1}</td>`;
       row.forEach((cell, idx) => {
         let cellClass = '';
         if (cell.acted) cellClass += 'acted-cell ';
         if (cell.agiBuffed) cellClass += 'buffed-cell';
-        let cellClass = "";
-        if (cell.acted) cellClass += "acted-cell ";
-        if (cell.agiBuffed) cellClass += "buffed-cell";
-        html += '<td class="' + cellClass.trim() + '">'${cell.acted ? ` class="acted-cell" data-unit="${idx}" data-turn="${t + 1}"` : ''}>${cell.value}${cell.acted ? ' 🟢' : ''}</td>`;
+        html += `<td class="${cellClass.trim()}"${cell.acted ? ` data-unit="${idx}" data-turn="${t + 1}"` : ''}>${cell.value}${cell.acted ? ' 🟢' : ''}</td>`;
       });
       html += '</tr>';
     });
@@ -168,23 +166,22 @@ document.getElementById('run-sim').addEventListener('click', function () {
         modal.style.display = 'flex';
 
         modal.querySelectorAll('.type-btn').forEach(btn => {
-  document.getElementById('effect-value').parentElement.style.display = 'block';
-  document.getElementById('effect-duration').parentElement.style.display = 'block';
+          const valueField = document.getElementById('effect-value').parentElement;
+          const durField = document.getElementById('effect-duration').parentElement;
+
           btn.onclick = () => {
             selectedType = btn.dataset.type;
-  const valueField = document.getElementById('effect-value').parentElement;
-  const durField = document.getElementById('effect-duration').parentElement;
 
-  if (selectedType === 'slow') {
-    valueField.style.display = 'none';
-    durField.style.display = 'block';
-  } else if (selectedType === 'agi_buff') {
-    valueField.style.display = 'block';
-    durField.style.display = 'block';
-  } else {
-    valueField.style.display = 'block';
-    durField.style.display = 'none';
-  }
+            if (selectedType === 'slow') {
+              valueField.style.display = 'none';
+              durField.style.display = 'block';
+            } else if (selectedType === 'agi_buff') {
+              valueField.style.display = 'block';
+              durField.style.display = 'block';
+            } else {
+              valueField.style.display = 'block';
+              durField.style.display = 'none';
+            }
             modal.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
           };
@@ -199,9 +196,9 @@ document.getElementById('run-sim').addEventListener('click', function () {
         document.getElementById('save-effect').onclick = () => {
           const val = parseInt(document.getElementById('effect-value').value);
           const dur = parseInt(document.getElementById('effect-duration').value);
-          if (selectedType && selectedTarget && val && dur) {
+          if (selectedType && selectedTarget && (val || selectedType === 'slow') && dur) {
             let actualValue = val;
-  if (selectedType === 'slow') actualValue = -30;
+            if (selectedType === 'slow') actualValue = -30;
             if (selectedType === 'slow' || selectedType === 'action_down') actualValue = -Math.abs(val);
             effects.push({ turn: parseInt(turn), caster: parseInt(unit) + 1, type: selectedType, target: selectedTarget, value: actualValue, duration: dur });
             modal.style.display = 'none';
