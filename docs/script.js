@@ -1,4 +1,7 @@
 
+let currentUnit = null;
+let currentTurn = null;
+
 window.addEventListener("DOMContentLoaded", () => {
   const container = document.querySelector(".unit-grid");
   for (let i = 1; i <= 10; i++) {
@@ -72,12 +75,36 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function openModal(unitIndex, turn) {
+  currentUnit = unitIndex;
+  currentTurn = turn;
+
+  // 初期化
+  document.getElementById("effect-type").value = "";
+  document.getElementById("effect-value").value = "";
+  document.getElementById("effect-duration").value = "";
+  document.getElementById("effect-duration").disabled = false;
+  document.querySelectorAll('input[name="targets"]').forEach(c => c.checked = false);
+
+  // ヘッダー更新
+  document.getElementById("modal-header").textContent = `Set Effect for Unit ${unitIndex} / Turn ${turn}`;
+
   document.getElementById("modal-overlay").classList.add("active");
   document.getElementById("effect-modal").classList.add("active");
-  console.log(`Open modal for Unit ${unitIndex} on Turn ${turn}`);
 }
 
 function closeModal() {
   document.getElementById("modal-overlay").classList.remove("active");
   document.getElementById("effect-modal").classList.remove("active");
+}
+
+function saveEffect() {
+  const type = document.getElementById("effect-type").value;
+  const value = document.getElementById("effect-value").value;
+  const duration = document.getElementById("effect-duration").value;
+  const targets = Array.from(document.querySelectorAll('input[name="targets"]:checked')).map(cb => cb.value);
+
+  console.log(`Saved for Unit ${currentUnit} on Turn ${currentTurn}`);
+  console.log({ type, value, duration, targets });
+
+  closeModal();
 }
