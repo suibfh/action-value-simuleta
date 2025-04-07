@@ -13,6 +13,7 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
   const resultTable = [];
 
   for (let turn = 1; turn <= totalIterations; turn++) {
+    units.forEach(u => { delete u.__actedValue; u.__actedThisTurn = false });
     units.forEach(u => delete u.__actedValue);
     // 効果適用（行動時発動 → 次演算で反映のためこのタイミングで処理）
     effects.filter(e => e.turn === turn - 1).forEach(e => {
@@ -48,15 +49,16 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
       .sort((a, b) => b.val - a.val || a.idx - b.idx);
 
     acted.forEach(a => {
+      units[a.idx].__actedThisTurn = true;
       units[a.idx].actedTurns.push(turn);
       units[a.idx].__actedValue = units[a.idx].actionValue;
       units[a.idx].actionValue = 0;
     });
 
-    // 敏捷バフの持続ターン減少
+    // 敏捷バフの持続ターン減少（行動ベース）
     units.forEach(unit => {
-      unit.agiBuffs.forEach(buff => buff.remaining--);
-      unit.agiBuffs = unit.agiBuffs.filter(buff => buff.remaining > 0);
+      unit.agiBuffs.forEach(buff => { if (unit.__actedThisTurn) buff.actedCount++; });
+      unit.agiBuffs = unit.agiBuffs.filter(buff => buff.actedCount < buff.remainingTurns);
     });
 
     // ログ保存
@@ -101,7 +103,7 @@ document.getElementById('run-sim').addEventListener('click', function () {
         <input type="number" id="effect-value" />
       </div>
       <div>
-        <label>持続演算:</label>
+        <label>持続ターン:</label>
         <input type="number" id="effect-duration" />
       </div>
       <button id="save-effect">保存</button>
