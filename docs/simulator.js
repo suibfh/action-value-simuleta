@@ -13,6 +13,7 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
   const resultTable = [];
 
   for (let turn = 1; turn <= totalIterations; turn++) {
+    units.forEach(u => delete u.__actedValue);
     // 効果適用（行動時発動 → 次演算で反映のためこのタイミングで処理）
     effects.filter(e => e.turn === turn - 1).forEach(e => {
       const targets = e.target === 'all' ? [...Array(units.length).keys()] : [parseInt(e.target) - 1];
@@ -50,7 +51,6 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
       units[a.idx].actedTurns.push(turn);
       units[a.idx].__actedValue = units[a.idx].actionValue;
       units[a.idx].actionValue = 0;
-      setTimeout(() => { units[a.idx].__actedValue = undefined }, 0);
     });
 
     // 敏捷バフの持続ターン減少
