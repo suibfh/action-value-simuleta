@@ -1,0 +1,10 @@
+body {
+  font-family: sans-serif;
+  margin: 2em;
+}
+#results {
+  margin-top: 2em;
+  padding: 1em;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+}
