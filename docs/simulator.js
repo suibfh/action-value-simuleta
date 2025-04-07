@@ -135,7 +135,10 @@ document.getElementById('run-sim').addEventListener('click', function () {
     unitNames.forEach(name => html += `<th>${name}</th>`);
     html += '</tr></thead><tbody>';
     html += '<tr><td>AGI</td>';
-    unitAgis.forEach(val => html += `<td class="` + (cellClass ? cellClass.trim() : "") + `">${val}</td>`);
+    unitAgis.forEach(val => let cellClass = "";
+        if (cell.acted) cellClass += "acted-cell ";
+        if (cell.agiBuffed) cellClass += "buffed-cell";
+        html += `<td class="` + cellClass.trim() + `">${val}</td>`);
     html += '</tr>';
     resultTable.forEach((row, t) => {
       html += `<tr><td>${t + 1}</td>`;
@@ -143,7 +146,10 @@ document.getElementById('run-sim').addEventListener('click', function () {
         let cellClass = '';
         if (cell.acted) cellClass += 'acted-cell ';
         if (cell.agiBuffed) cellClass += 'buffed-cell';
-        html += `<td class="` + (cellClass ? cellClass.trim() : "") + `"${cell.acted ? ` class="acted-cell" data-unit="${idx}" data-turn="${t + 1}"` : ''}>${cell.value}${cell.acted ? ' 🟢' : ''}</td>`;
+        let cellClass = "";
+        if (cell.acted) cellClass += "acted-cell ";
+        if (cell.agiBuffed) cellClass += "buffed-cell";
+        html += `<td class="` + cellClass.trim() + `"${cell.acted ? ` class="acted-cell" data-unit="${idx}" data-turn="${t + 1}"` : ''}>${cell.value}${cell.acted ? ' 🟢' : ''}</td>`;
       });
       html += '</tr>';
     });
