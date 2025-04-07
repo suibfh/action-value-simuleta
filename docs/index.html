@@ -32,5 +32,45 @@
   </section>
 
   <script src="script.js"></script>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const container = document.querySelector(".unit-grid");
+      for (let i = 1; i <= 10; i++) {
+        const block = document.createElement("div");
+        block.className = "unit-block";
+        block.innerHTML = `
+          <label for="agility-${i}">Unit ${i} Agility:</label>
+          <input type="number" id="agility-${i}" name="agility-${i}" min="0" />
+
+          <div class="effect-group">
+            <label>Effect Type:</label>
+            <select name="effect-type-${i}">
+              <option value="">None</option>
+              <option value="buff">Agility Buff</option>
+              <option value="pressure">Pressure</option>
+              <option value="valueup">Action Value Up</option>
+              <option value="valuedown">Action Value Down</option>
+            </select>
+
+            <label>Target:</label>
+            <select name="effect-target-${i}">
+              <option value="ally-single">Ally - Single</option>
+              <option value="ally-all">Ally - All</option>
+              <option value="enemy-single">Enemy - Single</option>
+              <option value="enemy-all">Enemy - All</option>
+            </select>
+
+            <label>Effect Value:</label>
+            <input type="number" name="effect-value-${i}" />
+
+            <label>Duration (turns):</label>
+            <input type="number" name="effect-duration-${i}" min="1" />
+          </div>
+        `;
+        container.appendChild(block);
+      }
+    });
+  </script>
 </body>
 </html>
