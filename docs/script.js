@@ -53,9 +53,7 @@ window.addEventListener("DOMContentLoaded", () => {
       turnCell.textContent = turn;
       row.appendChild(turnCell);
 
-      for (let i = 0; i < 10; i++) {
-        activeBuffs[i] = activeBuffs[i].filter(buff => --buff.remaining > 0);
-      }
+      // handled after action
 
       for (let i = 0; i < 10; i++) {
         const baseAgility = agilities[i];
@@ -113,7 +111,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 activeBuffs[targetIdx].push({
                   type: effect.type,
                   value: effect.value,
-                  remaining: parseInt(effect.duration, 10)
+                  remaining: parseInt(effect.duration, 10), actionCount: 0
                 });
               } else if (effect.type === "valueup" || effect.type === "valuedown") {
                 const value = parseInt(effect.value, 10) || 0;
@@ -126,7 +124,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
           cell.classList.add("action");
           cell.addEventListener("click", () => openModal(unitIndex, turn));
-          currentPoints[i] = 0; // ✅ 修正：正しくリセット
+          
+          // アクション時のみ、バフのターン数を減らす
+          activeBuffs[i] = activeBuffs[i].map(buff => {
+            buff.actionCount += 1;
+            return buff;
+          }).filter(buff => buff.actionCount < buff.remaining);
+currentPoints[i] = 0; // ✅ 修正：正しくリセット
         }
         row.appendChild(cell);
       }
