@@ -29,3 +29,10 @@ button {
   margin-top: 2em;
   overflow-x: auto;
 }
+.acted {
+  cursor: pointer;
+  background: #e3f2fd;
+  border-radius: 4px;
+  padding: 2px 4px;
+  display: inline-block;
+}

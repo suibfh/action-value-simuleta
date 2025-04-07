@@ -14,6 +14,7 @@ document.getElementById('run-sim').addEventListener('click', function () {
 
   const resultTable = [];
   const totalIterations = 50;
+  const effects = [];
 
   for (let t = 1; t <= totalIterations; t++) {
     units.forEach(unit => {
@@ -56,21 +57,46 @@ document.getElementById('run-sim').addEventListener('click', function () {
   });
   html += '</tr></thead><tbody>';
 
-  // Agility Row
   html += '<tr><td>AGI</td>';
   units.forEach(u => {
     html += `<td>${u.currentAgi}</td>`;
   });
   html += '</tr>';
 
-  resultTable.forEach((row, idx) => {
-    html += `<tr><td>${idx + 1}</td>`;
-    row.forEach(cell => {
-      html += `<td>${cell.value}${cell.acted ? ' 🟢' : ''}</td>`;
+  resultTable.forEach((row, turnIdx) => {
+    html += `<tr><td>${turnIdx + 1}</td>`;
+    row.forEach((cell, unitIdx) => {
+      if (cell.acted) {
+        html += `<td><span class="acted" data-unit="${unitIdx}" data-turn="${turnIdx + 1}" data-value="${cell.value}">${cell.value} 🟢</span></td>`;
+      } else {
+        html += `<td>${cell.value}</td>`;
+      }
     });
     html += '</tr>';
   });
 
   html += '</tbody></table>';
   results.innerHTML = html;
+
+  // Event listener for effect input
+  document.querySelectorAll('.acted').forEach(span => {
+    span.addEventListener('click', () => {
+      const unit = parseInt(span.dataset.unit);
+      const turn = parseInt(span.dataset.turn);
+      const value = parseInt(span.dataset.value);
+      const effect = prompt(`🛠 効果を設定
+ユニット${unit + 1} の ターン${turn} 行動値 ${value}
+
+入力形式：
+種類(agi_buff/slow/action_up/action_down), 対象(番号 or all), 値, 持続(ターン), 発動確率(%)
+例: agi_buff, all, 20, 3, 100`);
+      if (effect) {
+        effects.push({ turn, unit, effect });
+        span.style.backgroundColor = '#ffd';
+        span.title = 'Effect: ' + effect;
+      }
+    });
+  });
+
+  console.log("Effects set:", effects);
 });
