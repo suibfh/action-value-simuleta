@@ -127,7 +127,7 @@ window.addEventListener("DOMContentLoaded", () => {
           
           
           
-          // アクション時のみ、バフのターン数を減らす
+                    // アクション時のみ、バフのターン数を減らす
           activeBuffs[i] = activeBuffs[i]
             .map(buff => {
               if (buff.pending) {
@@ -139,10 +139,6 @@ window.addEventListener("DOMContentLoaded", () => {
             })
             .filter(buff => buff.actionCount < buff.remaining);
 
-
-            buff.actionCount += 1;
-            return buff;
-          }).filter(buff => buff.actionCount < buff.remaining);
 currentPoints[i] = 0; // ✅ 修正：正しくリセット
         }
         row.appendChild(cell);
