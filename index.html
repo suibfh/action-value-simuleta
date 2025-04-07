@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>敏捷シミュレーター（BFH）</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>敏捷シミュレーター（BFH）</h1>
+
+  <h2>ユニット情報（最大10体）</h2>
+  <div id="unit-inputs">
+    <table>
+      <thead>
+        <tr><th>#</th><th>ユニット名</th><th>敏捷</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><input type='text' placeholder='ユニット1' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+<tr><td>2</td><td><input type='text' placeholder='ユニット2' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+<tr><td>3</td><td><input type='text' placeholder='ユニット3' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+<tr><td>4</td><td><input type='text' placeholder='ユニット4' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+<tr><td>5</td><td><input type='text' placeholder='ユニット5' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+<tr><td>6</td><td><input type='text' placeholder='ユニット6' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+<tr><td>7</td><td><input type='text' placeholder='ユニット7' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+<tr><td>8</td><td><input type='text' placeholder='ユニット8' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+<tr><td>9</td><td><input type='text' placeholder='ユニット9' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+<tr><td>10</td><td><input type='text' placeholder='ユニット10' class='unit-name'></td><td><input type='number' min='0' class='unit-agi'></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>バフ／デバフ設定</h2>
+  <div id="effects-area">
+    <table id="effects-table">
+      <thead>
+        <tr><th>発動ターン</th><th>発動者</th><th>対象</th><th>効果種別</th><th>効果値</th><th>持続ターン</th><th>発動確率（%%）</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="number" min="1" max="50" class="turn"></td>
+          <td><input type="number" min="1" max="10" class="caster"></td>
+          <td><input type="text" placeholder="例: 3 または all" class="target"></td>
+          <td>
+            <select class="effect-type">
+              <option value="agi_buff">敏捷バフ</option>
+              <option value="slow">重圧</option>
+              <option value="action_up">行動値アップ</option>
+              <option value="action_down">行動値ダウン</option>
+            </select>
+          </td>
+          <td><input type="number" min="1" class="value"></td>
+          <td><input type="number" min="1" max="10" class="duration"></td>
+          <td><input type="number" min="0" max="100" class="probability" value="100"></td>
+        </tr>
+      </tbody>
+    </table>
+    <button id="add-effect-row">効果を追加</button>
+  </div>
+
+  <button id="run-sim">シミュレーション実行</button>
+
+  <div id="results"></div>
+
+  <script src="simulator.js"></script>
+</body>
+</html>
