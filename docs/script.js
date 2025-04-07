@@ -30,7 +30,6 @@ window.addEventListener("DOMContentLoaded", () => {
       turnCell.textContent = turn;
       row.appendChild(turnCell);
 
-      // Update points
       for (let i = 0; i < 10; i++) {
         currentPoints[i] += basePoints[i];
       }
@@ -46,7 +45,8 @@ window.addEventListener("DOMContentLoaded", () => {
         cell.textContent = currentPoints[i];
         if (actedIdx.includes(i)) {
           cell.classList.add("action");
-          currentPoints[i] = basePoints[i]; // reset after action
+          cell.addEventListener("click", () => openModal(i + 1, turn));
+          currentPoints[i] = basePoints[i];
         }
         row.appendChild(cell);
       }
@@ -54,3 +54,14 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+function openModal(unitIndex, turn) {
+  document.getElementById("modal-overlay").classList.add("active");
+  document.getElementById("effect-modal").classList.add("active");
+  console.log(`Open modal for Unit ${unitIndex} on Turn ${turn}`);
+}
+
+function closeModal() {
+  document.getElementById("modal-overlay").classList.remove("active");
+  document.getElementById("effect-modal").classList.remove("active");
+}
