@@ -127,19 +127,22 @@ window.addEventListener("DOMContentLoaded", () => {
           
           
           
-                              // アクション時のみ、バフのターン数を減らす
-          activeBuffs[i] = activeBuffs[i]
-            .map(buff => {
-              if (turn > buff.appliedTurn) {
-                if (buff.pending) {
-                  buff.pending = false; // 最初のアクションではカウントせず、pending解除
-                } else {
-                  buff.actionCount += 1; // 次のアクションからカウント開始
+                                        // アクション時のみ、バフのターン数を減らす
+          if (actedUnits.includes(i)) {
+            activeBuffs[i] = activeBuffs[i]
+              .map(buff => {
+                if (turn > buff.appliedTurn) {
+                  if (buff.pending) {
+                    buff.pending = false; // 最初のアクションではカウントせず、pending解除
+                  } else {
+                    buff.actionCount += 1; // 次のアクションからカウント開始
+                  }
                 }
-              }
-              return buff;
-            })
-            .filter(buff => buff.actionCount < buff.remaining);
+                return buff;
+              })
+              .filter(buff => buff.actionCount < buff.remaining);
+          }
+
 
 
 currentPoints[i] = 0; // ✅ 修正：正しくリセット
