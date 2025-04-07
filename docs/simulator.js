@@ -22,37 +22,34 @@ document.getElementById('run-sim').addEventListener('click', function () {
       unit.actionValue += gain;
     });
 
-    // Determine action order
     const actedThisTurn = [];
+    const actedValues = {};
+
+    // Determine who acts
     units.forEach((unit, idx) => {
       if (unit.actionValue >= 1000) {
-        actedThisTurn.push({
-          idx,
-          name: unit.name,
-          actionValue: unit.actionValue
-        });
+        actedThisTurn.push({ idx, value: unit.actionValue });
+        actedValues[idx] = unit.actionValue; // store original value before reset
       }
     });
 
-    // Sort by highest value then lowest index
-    actedThisTurn.sort((a, b) => b.actionValue - a.actionValue || a.idx - b.idx);
+    // Sort action order
+    actedThisTurn.sort((a, b) => b.value - a.value || a.idx - b.idx);
 
-    // Action
-    const actedIndices = new Set();
+    // Mark acted
     actedThisTurn.forEach(a => {
       units[a.idx].actedTurns.push(t);
-      actedIndices.add(a.idx);
     });
 
-    // Log before resetting
+    // Record values before reset
     resultTable.push(units.map((unit, idx) => ({
       name: unit.name,
       agi: unit.currentAgi,
-      value: actedIndices.has(idx) ? unit.actionValue : unit.actionValue,
-      acted: actedIndices.has(idx)
+      value: actedValues.hasOwnProperty(idx) ? actedValues[idx] : unit.actionValue,
+      acted: actedValues.hasOwnProperty(idx)
     })));
 
-    // Then reset action values for those who acted
+    // Reset after logging
     actedThisTurn.forEach(a => {
       units[a.idx].actionValue = 0;
     });
