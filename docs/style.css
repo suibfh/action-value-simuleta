@@ -9,16 +9,17 @@ table {
   border-collapse: collapse;
   width: 100%;
   margin-bottom: 1em;
+  table-layout: fixed;
 }
 th, td {
   border: 1px solid #ccc;
-  padding: 0.5em;
-  text-align: center;
-}
-input, select {
-  width: 95%;
   padding: 0.3em;
-  box-sizing: border-box;
+  text-align: center;
+  font-size: 0.9em;
+}
+input {
+  width: 90%;
+  padding: 0.3em;
 }
 button {
   margin: 1em 0;
@@ -26,8 +27,5 @@ button {
 }
 #results {
   margin-top: 2em;
-  padding: 1em;
-  border: 1px solid #ccc;
-  background: #f9f9f9;
-  white-space: pre-wrap;
+  overflow-x: auto;
 }
