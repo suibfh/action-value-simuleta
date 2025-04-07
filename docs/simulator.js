@@ -48,6 +48,7 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
 
     acted.forEach(a => {
       units[a.idx].actedTurns.push(turn);
+      units[a.idx].__actedValue = units[a.idx].actionValue;
       units[a.idx].actionValue = 0;
     });
 
@@ -61,7 +62,7 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
     resultTable.push(units.map((u, i) => ({
       name: u.name,
       agi: u.currentAgi,
-      value: u.actionValue,
+      value: u.__actedValue !== undefined ? u.__actedValue : u.actionValue,
       acted: acted.some(a => a.idx === i)
     })));
   }
