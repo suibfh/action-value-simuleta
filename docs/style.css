@@ -22,8 +22,8 @@ input {
   padding: 0.3em;
 }
 button {
-  margin: 1em 0;
-  padding: 0.5em 1em;
+  margin: 0.2em;
+  padding: 0.4em 0.6em;
 }
 #results {
   margin-top: 2em;
@@ -35,4 +35,14 @@ button {
   border-radius: 4px;
   padding: 2px 4px;
   display: inline-block;
+}
+.selected {
+  background-color: #4caf50;
+  color: white;
+}
+.effect-form {
+  border: 1px solid #ccc;
+  padding: 1em;
+  margin-top: 1em;
+  background: #f9f9f9;
 }
