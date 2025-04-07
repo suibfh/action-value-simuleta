@@ -1,6 +1,6 @@
 
 document.getElementById('run-sim').addEventListener('click', function () {
-  const unitNames = [...document.querySelectorAll('.unit-name')].map(input => input.value || 'ユニット');
+  const unitNames = [...document.querySelectorAll('.unit-name')].map(input => input.value || 'Unit');
   const unitAgis = [...document.querySelectorAll('.unit-agi')].map(input => parseInt(input.value) || 0);
 
   const units = unitNames.map((name, i) => ({
@@ -16,13 +16,13 @@ document.getElementById('run-sim').addEventListener('click', function () {
   const totalIterations = 50;
 
   for (let t = 1; t <= totalIterations; t++) {
-    // 演算ごとに行動値加算（敏捷 + 100）
+    // Add agility + 100
     units.forEach(unit => {
       const gain = Math.floor(unit.currentAgi + 100);
       unit.actionValue += gain;
     });
 
-    // 行動順を決める
+    // Determine action order
     const actedThisTurn = [];
     units.forEach((unit, idx) => {
       if (unit.actionValue >= 1000) {
@@ -34,28 +34,33 @@ document.getElementById('run-sim').addEventListener('click', function () {
       }
     });
 
-    // 行動順決定：行動値が多い順 → 同値は先のユニット優先
+    // Sort by highest value then lowest index
     actedThisTurn.sort((a, b) => b.actionValue - a.actionValue || a.idx - b.idx);
 
-    // 行動処理
+    // Action
+    const actedIndices = new Set();
     actedThisTurn.forEach(a => {
-      units[a.idx].actionValue = 0;
       units[a.idx].actedTurns.push(t);
+      actedIndices.add(a.idx);
     });
 
-    // ログ保存
-    resultTable.push(units.map(unit => ({
+    // Log before resetting
+    resultTable.push(units.map((unit, idx) => ({
       name: unit.name,
       agi: unit.currentAgi,
-      value: unit.actionValue,
-      acted: unit.actedTurns.includes(t)
+      value: actedIndices.has(idx) ? unit.actionValue : unit.actionValue,
+      acted: actedIndices.has(idx)
     })));
+
+    // Then reset action values for those who acted
+    actedThisTurn.forEach(a => {
+      units[a.idx].actionValue = 0;
+    });
   }
 
-  // 表示出力
+  // Display
   const results = document.getElementById('results');
-  let html = '<h2>シミュレーション結果（バフなし）</h2><table><thead><tr><th>演算</th>';
-
+  let html = '<h2>Simulation Result (No Buffs)</h2><table><thead><tr><th>Turn</th>';
   units.forEach(u => {
     html += `<th>${u.name}</th>`;
   });
