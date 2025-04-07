@@ -74,76 +74,93 @@ document.getElementById('run-sim').addEventListener('click', function () {
     html += '</tr>';
   });
 
-  html += '</tbody></table><div id="effect-form-container"></div>';
+  html += '</tbody></table>';
   results.innerHTML = html;
+
+  const modal = document.createElement('div');
+  modal.id = 'effect-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h3 id="modal-title"></h3>
+      <div>
+        <label>効果種別:</label>
+        <button class="type-btn" data-type="agi_buff">敏捷バフ</button>
+        <button class="type-btn" data-type="slow">重圧</button>
+        <button class="type-btn" data-type="action_up">行動値アップ</button>
+        <button class="type-btn" data-type="action_down">行動値ダウン</button>
+      </div>
+      <div>
+        <label>対象:</label>
+        ${[...Array(10)].map((_, i) => `<button class="target-btn" data-target="${i+1}">${i+1}</button>`).join('')}
+        <button class="target-btn" data-target="all">all</button>
+      </div>
+      <div>
+        <label>効果値:</label>
+        <input type="number" id="effect-value" />
+      </div>
+      <div>
+        <label>持続ターン:</label>
+        <input type="number" id="effect-duration" />
+      </div>
+      <button id="save-effect">保存</button>
+      <button id="close-modal">キャンセル</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  let selectedType = '';
+  let selectedTarget = '';
+  let currentSpan = null;
 
   document.querySelectorAll('.acted').forEach(span => {
     span.addEventListener('click', () => {
-      const unit = parseInt(span.dataset.unit);
-      const turn = parseInt(span.dataset.turn);
-      const value = parseInt(span.dataset.value);
-
-      const formContainer = document.getElementById('effect-form-container');
-      const effectForm = `
-        <div class="effect-form">
-          <h3>🛠 効果設定 - ユニット${unit + 1} / ターン${turn}</h3>
-          <div>
-            <label>効果種別:</label>
-            <button class="type-btn" data-type="agi_buff">敏捷バフ</button>
-            <button class="type-btn" data-type="slow">重圧</button>
-            <button class="type-btn" data-type="action_up">行動値アップ</button>
-            <button class="type-btn" data-type="action_down">行動値ダウン</button>
-          </div>
-          <div>
-            <label>対象:</label>
-            ${[...Array(10)].map((_, i) => `<button class="target-btn" data-target="${i+1}">${i+1}</button>`).join('')}
-            <button class="target-btn" data-target="all">all</button>
-          </div>
-          <div>
-            <label>効果値:</label>
-            <input type="number" id="effect-value" />
-          </div>
-          <div>
-            <label>持続ターン:</label>
-            <input type="number" id="effect-duration" />
-          </div>
-          <button id="save-effect">保存</button>
-        </div>
-      `;
-      formContainer.innerHTML = effectForm;
-
-      let selectedType = '';
-      let selectedTarget = '';
-
-      document.querySelectorAll('.type-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          selectedType = btn.dataset.type;
-          document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-        });
-      });
-
-      document.querySelectorAll('.target-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          selectedTarget = btn.dataset.target;
-          document.querySelectorAll('.target-btn').forEach(b => b.classList.remove('selected'));
-          btn.classList.add('selected');
-        });
-      });
-
-      document.getElementById('save-effect').addEventListener('click', () => {
-        const val = parseInt(document.getElementById('effect-value').value);
-        const dur = parseInt(document.getElementById('effect-duration').value);
-        if (selectedType && selectedTarget && val && dur) {
-          effects.push({ turn, caster: unit + 1, type: selectedType, target: selectedTarget, value: val, duration: dur });
-          span.style.backgroundColor = '#ffd';
-          span.title = `${selectedType}, ${selectedTarget}, ${val}, ${dur}`;
-          formContainer.innerHTML = '';
-        } else {
-          alert("すべての項目を入力・選択してください");
-        }
-      });
+      currentSpan = span;
+      selectedType = '';
+      selectedTarget = '';
+      document.getElementById('modal-title').innerText =
+        `🛠 効果設定 - ユニット${parseInt(span.dataset.unit)+1} / ターン${span.dataset.turn}`;
+      modal.style.display = 'flex';
+      modal.dataset.unit = span.dataset.unit;
+      modal.dataset.turn = span.dataset.turn;
     });
+  });
+
+  document.getElementById('close-modal').addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+
+  modal.querySelectorAll('.type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedType = btn.dataset.type;
+      modal.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+
+  modal.querySelectorAll('.target-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedTarget = btn.dataset.target;
+      modal.querySelectorAll('.target-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+
+  document.getElementById('save-effect').addEventListener('click', () => {
+    const val = parseInt(document.getElementById('effect-value').value);
+    const dur = parseInt(document.getElementById('effect-duration').value);
+    const turn = parseInt(modal.dataset.turn);
+    const unit = parseInt(modal.dataset.unit);
+    if (selectedType && selectedTarget && val && dur) {
+      let actualValue = val;
+      if (selectedType === 'slow') actualValue = -Math.abs(val);
+      if (selectedType === 'action_down') actualValue = -Math.abs(val);
+      effects.push({ turn, caster: unit + 1, type: selectedType, target: selectedTarget, value: actualValue, duration: dur });
+      currentSpan.style.backgroundColor = '#ffd';
+      currentSpan.title = `${selectedType}, ${selectedTarget}, ${actualValue}, ${dur}`;
+      modal.style.display = 'none';
+    } else {
+      alert("すべての項目を入力・選択してください");
+    }
   });
 
   console.log("Effects set:", effects);
