@@ -55,8 +55,18 @@ function runSimulation(unitNames, unitAgis, effects, totalIterations = 50) {
       u.actedTurns.push(turn);
       u.actionValue = 0;
       if (u.agiBuffs) {
-        u.agiBuffs.forEach(buff => {
-          if (buff.appliedAt < turn) {
+        let counted = false;
+      u.agiBuffs.forEach(buff => {
+        if (buff.appliedAt < turn) {
+          if (buff.activated && buff.actedCountStarted && !counted) {
+            buff.actedCount++;
+            counted = true;
+          } else if (buff.activated && !buff.actedCountStarted) {
+            buff.actedCountStarted = true;
+            counted = true;
+          } else if (!buff.activated) {
+            buff.activated = true;
+          }
             if (buff.activated && buff.actedCountStarted) buff.actedCount++;
             else if (buff.activated) buff.actedCountStarted = true;
             else buff.activated = true;
