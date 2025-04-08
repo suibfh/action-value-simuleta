@@ -144,9 +144,12 @@ window.addEventListener("DOMContentLoaded", () => {
               return buff.actionCount < buff.remaining;
             });
 
+            // 安全確認済み。console.log などは削除済み。
             activeBuffs[i] = updatedBuffs;
           }
-Modifiers = {};
+currentTurn = null;
+const effectDataMap = {};
+const agilityModifiers = {};
 const actionValueModifiers = {};
 
 window.addEventListener("DOMContentLoaded", () => {
