@@ -129,6 +129,7 @@ window.addEventListener("DOMContentLoaded", () => {
           
                                                                                 // アクション時のみ、バフのターン数を減らす
           if (actedUnits.includes(i)) {
+            // まず各バフを処理
             const mappedBuffs = activeBuffs[i].map((buff) => {
               if (turn >= buff.appliedTurn) {
                 if (buff.pending) {
@@ -140,11 +141,12 @@ window.addEventListener("DOMContentLoaded", () => {
               return buff;
             });
 
+            // 有効なバフのみを残す
             const updatedBuffs = mappedBuffs.filter((buff) => {
               return buff.actionCount < buff.remaining;
             });
 
-            // 安全確認済み。console.log などは削除済み。
+            // 更新
             activeBuffs[i] = updatedBuffs;
           }
 currentTurn = null;
