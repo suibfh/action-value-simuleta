@@ -1,10 +1,12 @@
-// 修正済みの script.js の先頭にコメントを追加（中身は省略）
+// 修正版: nullチェック付きで構文エラー回避
 document.addEventListener("DOMContentLoaded", function () {
   const table = document.getElementById("result-table");
-  const tbody = table.querySelector("tbody");
+  const tbody = table?.querySelector("tbody");
   const simulateButton = document.getElementById("simulate");
   const unitCount = 10;
   const turnLimit = 50;
+
+  if (!simulateButton || !tbody || !table) return;
 
   function getInitialAgilities() {
     const inputs = document.querySelectorAll(".unit-agility");
@@ -25,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
       for (let i = 0; i < unitCount; i++) {
         const buffs = activeBuffs[i];
-
         let base = initialAgilities[i];
         let adjusted = base;
         let effectLogs = [];
