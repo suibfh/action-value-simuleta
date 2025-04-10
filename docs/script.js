@@ -1,12 +1,11 @@
-// 修正版: nullチェック付きで構文エラー回避
 document.addEventListener("DOMContentLoaded", function () {
   const table = document.getElementById("result-table");
   const tbody = table?.querySelector("tbody");
-  const simulateButton = document.getElementById("simulate");
+  const form = document.getElementById("agility-form");
   const unitCount = 10;
   const turnLimit = 50;
 
-  if (!simulateButton || !tbody || !table) return;
+  if (!form || !tbody || !table) return;
 
   function getInitialAgilities() {
     const inputs = document.querySelectorAll(".unit-agility");
@@ -114,5 +113,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  simulateButton.addEventListener("click", calculateTurnOrder);
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    calculateTurnOrder();
+  });
 });
