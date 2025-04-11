@@ -3,44 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Action Value Simulator</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>BFH 行動順シミュレーター</title>
 </head>
 <body>
-  <h1>Action Value Simulator</h1>
+  <h1>BFH 行動順シミュレーター</h1>
 
-  <section id="unit-inputs">
-    <h2>Unit Agility Input</h2>
-    <form id="agility-form">
-      <div class="unit-grid">
-        <input type="number" class="unit-agility" placeholder="Unit 1 Agi" />
-<input type="number" class="unit-agility" placeholder="Unit 2 Agi" />
-<input type="number" class="unit-agility" placeholder="Unit 3 Agi" />
-<input type="number" class="unit-agility" placeholder="Unit 4 Agi" />
-<input type="number" class="unit-agility" placeholder="Unit 5 Agi" />
-<input type="number" class="unit-agility" placeholder="Unit 6 Agi" />
-<input type="number" class="unit-agility" placeholder="Unit 7 Agi" />
-<input type="number" class="unit-agility" placeholder="Unit 8 Agi" />
-<input type="number" class="unit-agility" placeholder="Unit 9 Agi" />
-<input type="number" class="unit-agility" placeholder="Unit 10 Agi" />
-      </div>
-      <button type="submit">Run Simulation</button>
-    </form>
-  </section>
+  <form id="agility-form">
+    <h2>ユニットの敏捷値を入力してください</h2>
+    <div id="unit-inputs"></div>
+    <button type="submit">Run Simulation</button>
+  </form>
 
-  <section id="simulation-output">
-    <h2>Simulation Results</h2>
-    <table id="result-table">
-      <thead>
-        <tr>
-          <th>Turn</th>
-          <th>Unit 1</th><th>Unit 2</th><th>Unit 3</th><th>Unit 4</th><th>Unit 5</th>
-          <th>Unit 6</th><th>Unit 7</th><th>Unit 8</th><th>Unit 9</th><th>Unit 10</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </section>
+  <h2>結果</h2>
+  <table border="1">
+    <thead>
+      <tr>
+        <th>演算</th>
+        <th>Unit1</th>
+        <th>Unit2</th>
+        <th>Unit3</th>
+        <th>Unit4</th>
+        <th>Unit5</th>
+        <th>Unit6</th>
+        <th>Unit7</th>
+        <th>Unit8</th>
+        <th>Unit9</th>
+        <th>Unit10</th>
+      </tr>
+    </thead>
+    <tbody id="result-table"></tbody>
+  </table>
 
   <script src="script.js"></script>
 </body>
