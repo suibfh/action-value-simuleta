@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const actionValues = new Array(unitCount).fill(0);
-    const avModifiers = new Array(unitCount).fill(0); // AV Up/Down temporary effects
+    const avModifiers = new Array(unitCount).fill(0);
     const maxIterations = 50;
     resultTable.innerHTML = '';
 
@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
       row.appendChild(labelCell);
 
       for (let i = 0; i < unitCount; i++) {
-        // Apply agility buffs/debuffs
         let modifiedAgility = agilityBase[i];
         for (const effect of activeEffects[i]) {
           if (effect.type === 'agility_buff') {
@@ -52,10 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         actionValues[i] += modifiedAgility + 100;
 
-        // Apply one-time AV modifier
         if (avModifiers[i] !== 0) {
           actionValues[i] += avModifiers[i];
-          avModifiers[i] = 0; // reset after one use
+          avModifiers[i] = 0;
         }
 
         const cell = document.createElement('td');
@@ -65,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
           cell.textContent = `${actionValues[i]} ●`;
           actionValues[i] = 0;
 
-          // Apply new effects from effectMap
           const effects = effectMap[i]?.[turn];
           if (effects) {
             const { type, value, duration, targets } = effects;
@@ -90,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
           cell.textContent = actionValues[i];
         }
 
-        // Add active effect markers
         if (messages.length > 0) {
           const msg = document.createElement('div');
           msg.style.fontSize = '0.75em';
@@ -101,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
         row.appendChild(cell);
       }
 
-      // Decrement durations and remove expired effects
       for (let i = 0; i < unitCount; i++) {
         activeEffects[i] = activeEffects[i].filter(effect => {
           effect.remaining -= 1;
@@ -138,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
       { label: 'Action Value Up', value: 'av_up' },
       { label: 'Action Value Down', value: 'av_down' }
     ];
-
     effectTypes.forEach(effect => {
       const option = document.createElement('option');
       option.value = effect.value;
@@ -146,8 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
       typeSelect.appendChild(option);
     });
     modal.appendChild(typeSelect);
-
-    const valueInput;
 
     const valueInput = document.createElement('input');
     valueInput.type = 'number';
@@ -161,9 +153,8 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.appendChild(durationInput);
 
     typeSelect.addEventListener('change', () => {
-      const selected = typeSelect.value;
       const durationField = document.getElementById('duration-input');
-      if (selected === 'av_up' || selected === 'av_down') {
+      if (typeSelect.value === 'av_up' || typeSelect.value === 'av_down') {
         durationField.style.display = 'none';
       } else {
         durationField.style.display = '';
