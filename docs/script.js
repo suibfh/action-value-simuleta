@@ -153,11 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.appendChild(durationInput);
 
     typeSelect.addEventListener('change', () => {
-      const durationField = document.getElementById('duration-input');
       if (typeSelect.value === 'av_up' || typeSelect.value === 'av_down') {
-        durationField.style.display = 'none';
+        durationInput.style.display = 'none';
       } else {
-        durationField.style.display = '';
+        durationInput.style.display = '';
       }
     });
     typeSelect.dispatchEvent(new Event('change'));
