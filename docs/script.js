@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultTable = document.getElementById('result-table');
 
   const effectMap = {};
+  const activeEffects = Array.from({ length: unitCount }, () => []);
 
   for (let i = 1; i <= unitCount; i++) {
     const input = document.createElement('input');
@@ -20,44 +21,92 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function calculateTurnOrder() {
-    const agilityValues = [];
+    const agilityBase = [];
     const inputs = form.querySelectorAll('input');
-
     inputs.forEach((input) => {
       const value = input.value.trim();
-      const agility = value === '' ? 0 : Number(value);
-      agilityValues.push(agility);
+      agilityBase.push(value === '' ? 0 : Number(value));
     });
 
     const actionValues = new Array(unitCount).fill(0);
+    const avModifiers = new Array(unitCount).fill(0); // AV Up/Down temporary effects
     const maxIterations = 50;
     resultTable.innerHTML = '';
 
-    for (let iteration = 1; iteration <= maxIterations; iteration++) {
+    for (let turn = 1; turn <= maxIterations; turn++) {
       const row = document.createElement('tr');
       const labelCell = document.createElement('td');
-      labelCell.textContent = `#${iteration}`;
+      labelCell.textContent = `#${turn}`;
       row.appendChild(labelCell);
 
       for (let i = 0; i < unitCount; i++) {
-        actionValues[i] += agilityValues[i] + 100;
+        // Apply agility buffs/debuffs
+        let modifiedAgility = agilityBase[i];
+        for (const effect of activeEffects[i]) {
+          if (effect.type === 'agility_buff') {
+            modifiedAgility += Math.floor((agilityBase[i] * effect.value) / 100);
+          } else if (effect.type === 'pressure') {
+            modifiedAgility += Math.floor((agilityBase[i] * -30) / 100);
+          }
+        }
+
+        actionValues[i] += modifiedAgility + 100;
+
+        // Apply one-time AV modifier
+        if (avModifiers[i] !== 0) {
+          actionValues[i] += avModifiers[i];
+          avModifiers[i] = 0; // reset after one use
+        }
 
         const cell = document.createElement('td');
+        const messages = [];
 
         if (actionValues[i] >= 1000) {
           cell.textContent = `${actionValues[i]} ●`;
           actionValues[i] = 0;
 
+          // Apply new effects from effectMap
+          const effects = effectMap[i]?.[turn];
+          if (effects) {
+            const { type, value, duration, targets } = effects;
+            for (const target of targets) {
+              if (type === 'av_up') {
+                avModifiers[target] += value;
+              } else if (type === 'av_down') {
+                avModifiers[target] -= value;
+              } else {
+                activeEffects[target].push({ type, value, remaining: duration });
+              }
+            }
+            messages.push(`(${type.replace(/_/g, ' ')} → Units: ${targets.map(t => t + 1).join(',')})`);
+          }
+
           const btn = document.createElement('button');
           btn.textContent = '⚙';
           btn.title = 'Set Effect';
-          btn.onclick = () => openEffectModal(i, iteration);
+          btn.onclick = () => openEffectModal(i, turn);
           cell.appendChild(btn);
         } else {
           cell.textContent = actionValues[i];
         }
 
+        // Add active effect markers
+        if (messages.length > 0) {
+          const msg = document.createElement('div');
+          msg.style.fontSize = '0.75em';
+          msg.textContent = messages.join(' ');
+          cell.appendChild(msg);
+        }
+
         row.appendChild(cell);
+      }
+
+      // Decrement durations and remove expired effects
+      for (let i = 0; i < unitCount; i++) {
+        activeEffects[i] = activeEffects[i].filter(effect => {
+          effect.remaining -= 1;
+          return effect.remaining > 0;
+        });
       }
 
       resultTable.appendChild(row);
@@ -118,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         durationField.style.display = '';
       }
     });
-    typeSelect.dispatchEvent(new Event('change')); // initial trigger
+    typeSelect.dispatchEvent(new Event('change'));
 
     const targetLabel = document.createElement('div');
     targetLabel.textContent = 'Target Units:';
