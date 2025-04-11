@@ -83,10 +83,17 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.appendChild(header);
 
     const typeSelect = document.createElement('select');
-    ['Agility Buff', 'Pressure', 'Action Value Up', 'Action Value Down'].forEach(effect => {
+    const effectTypes = [
+      { label: 'Agility Buff', value: 'agility_buff' },
+      { label: 'Pressure', value: 'pressure' },
+      { label: 'Action Value Up', value: 'av_up' },
+      { label: 'Action Value Down', value: 'av_down' }
+    ];
+
+    effectTypes.forEach(effect => {
       const option = document.createElement('option');
-      option.value = effect.toLowerCase().replace(/ /g, '_');
-      option.textContent = effect;
+      option.value = effect.value;
+      option.textContent = effect.label;
       typeSelect.appendChild(option);
     });
     modal.appendChild(typeSelect);
@@ -99,7 +106,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const durationInput = document.createElement('input');
     durationInput.type = 'number';
     durationInput.placeholder = 'Turns';
+    durationInput.id = 'duration-input';
     modal.appendChild(durationInput);
+
+    typeSelect.addEventListener('change', () => {
+      const selected = typeSelect.value;
+      const durationField = document.getElementById('duration-input');
+      if (selected === 'av_up' || selected === 'av_down') {
+        durationField.style.display = 'none';
+      } else {
+        durationField.style.display = '';
+      }
+    });
+    typeSelect.dispatchEvent(new Event('change')); // initial trigger
 
     const targetLabel = document.createElement('div');
     targetLabel.textContent = 'Target Units:';
@@ -126,10 +145,12 @@ document.addEventListener('DOMContentLoaded', () => {
         effectMap[unitIndex] = {};
       }
       const selectedTargets = targets.filter(cb => cb.checked).map(cb => Number(cb.value));
+      const selectedType = typeSelect.value;
+      const fixedDuration = (selectedType === 'av_up' || selectedType === 'av_down') ? 1 : Number(durationInput.value);
       effectMap[unitIndex][turnNumber] = {
-        type: typeSelect.value,
+        type: selectedType,
         value: Number(valueInput.value),
-        duration: Number(durationInput.value),
+        duration: fixedDuration,
         targets: selectedTargets
       };
       closeModal();
