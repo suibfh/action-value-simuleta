@@ -147,6 +147,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     modal.appendChild(typeSelect);
 
+    const valueInput;
+
     const valueInput = document.createElement('input');
     valueInput.type = 'number';
     valueInput.placeholder = 'Value';
