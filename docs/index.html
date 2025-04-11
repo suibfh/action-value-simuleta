@@ -1,39 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BFH Turn Order Simulator</title>
+  <meta charset="UTF-8">
+  <title>BFH Action Order Simulator</title>
 </head>
 <body>
-  <h1>BFH Turn Order Simulator</h1>
-
+  <h1>BFH Action Order Simulator</h1>
   <form id="agility-form">
-    <h2>Enter Agility for Each Unit</h2>
-    <div id="unit-inputs"></div>
+    <div id="unit-inputs">
+      <input type="number" name="unit1" placeholder="Unit1 Agility">
+      <input type="number" name="unit2" placeholder="Unit2 Agility">
+      <input type="number" name="unit3" placeholder="Unit3 Agility">
+      <input type="number" name="unit4" placeholder="Unit4 Agility">
+      <input type="number" name="unit5" placeholder="Unit5 Agility">
+      <input type="number" name="unit6" placeholder="Unit6 Agility">
+      <input type="number" name="unit7" placeholder="Unit7 Agility">
+      <input type="number" name="unit8" placeholder="Unit8 Agility">
+      <input type="number" name="unit9" placeholder="Unit9 Agility">
+      <input type="number" name="unit10" placeholder="Unit10 Agility">
+    </div>
     <button type="submit">Run Simulation</button>
   </form>
-
-  <h2>Simulation Result</h2>
-  <table border="1">
-    <thead>
-      <tr>
-        <th>Step</th>
-        <th>Unit1</th>
-        <th>Unit2</th>
-        <th>Unit3</th>
-        <th>Unit4</th>
-        <th>Unit5</th>
-        <th>Unit6</th>
-        <th>Unit7</th>
-        <th>Unit8</th>
-        <th>Unit9</th>
-        <th>Unit10</th>
-      </tr>
-    </thead>
+  <table>
     <tbody id="result-table"></tbody>
   </table>
-
-  <script src="script.js"></script>
 </body>
 </html>
