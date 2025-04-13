@@ -13,6 +13,13 @@ document.getElementById("start-simulation").addEventListener("click", () => {
       actionValue[i] += agility[i] + 100;
       result[i][turn] = actionValue[i];
     }
+
+    // Reset action values if they acted this turn
+    for (let i = 0; i < 10; i++) {
+      if (result[i][turn] >= 1000) {
+        actionValue[i] = 0;
+      }
+    }
   }
 
   renderTable(result);
@@ -24,12 +31,12 @@ function renderTable(data) {
 
   const table = document.createElement("table");
   const header = document.createElement("tr");
-  header.innerHTML = "<th>ユニット\\演算</th>" + Array.from({ length: 50 }, (_, i) => `<th>${i + 1}</th>`).join("");
+  header.innerHTML = "<th>Unit\\Turn</th>" + Array.from({ length: 50 }, (_, i) => `<th>${i + 1}</th>`).join("");
   table.appendChild(header);
 
   data.forEach((row, unitIndex) => {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>ユニット${unitIndex + 1}</td>` + row.map(value => {
+    tr.innerHTML = `<td>Unit ${unitIndex + 1}</td>` + row.map(value => {
       return value >= 1000 ? `<td class='acted'>${value}</td>` : `<td>${value}</td>`;
     }).join("");
     table.appendChild(tr);
