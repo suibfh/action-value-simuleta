@@ -1,43 +1,39 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('agility-form');
-  const resultTable = document.getElementById('result-table');
-  const unitCount = 10;
+document.getElementById("start-simulation").addEventListener("click", () => {
+  const agility = [];
+  for (let i = 1; i <= 10; i++) {
+    const val = parseInt(document.getElementById(`agility-${i}`).value) || 0;
+    agility.push(val);
+  }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const agilityValues = [];
-    const inputs = form.querySelectorAll('input[type="number"]');
-    inputs.forEach((input) => {
-      const value = input.value.trim();
-      const agility = value === '' ? 0 : Number(value);
-      agilityValues.push(agility);
-    });
+  const result = Array.from({ length: 10 }, () => []);
+  const actionValue = new Array(10).fill(0);
 
-    const actionValues = new Array(unitCount).fill(0);
-    const maxIterations = 50;
-    resultTable.innerHTML = '';
-
-    for (let iteration = 1; iteration <= maxIterations; iteration++) {
-      const row = document.createElement('tr');
-      const labelCell = document.createElement('td');
-      labelCell.textContent = `#${iteration}`;
-      row.appendChild(labelCell);
-
-      for (let i = 0; i < unitCount; i++) {
-        actionValues[i] += agilityValues[i] + 100;
-        const cell = document.createElement('td');
-
-        if (actionValues[i] >= 1000) {
-          cell.textContent = `${actionValues[i]} ●`;
-          actionValues[i] = 0;
-        } else {
-          cell.textContent = actionValues[i];
-        }
-
-        row.appendChild(cell);
-      }
-
-      resultTable.appendChild(row);
+  for (let turn = 0; turn < 50; turn++) {
+    for (let i = 0; i < 10; i++) {
+      actionValue[i] += agility[i] + 100;
+      result[i][turn] = actionValue[i];
     }
-  });
+  }
+
+  renderTable(result);
 });
+
+function renderTable(data) {
+  const container = document.getElementById("simulation-result");
+  container.innerHTML = "";
+
+  const table = document.createElement("table");
+  const header = document.createElement("tr");
+  header.innerHTML = "<th>ユニット\\演算</th>" + Array.from({ length: 50 }, (_, i) => `<th>${i + 1}</th>`).join("");
+  table.appendChild(header);
+
+  data.forEach((row, unitIndex) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>ユニット${unitIndex + 1}</td>` + row.map(value => {
+      return value >= 1000 ? `<td class='acted'>${value}</td>` : `<td>${value}</td>`;
+    }).join("");
+    table.appendChild(tr);
+  });
+
+  container.appendChild(table);
+}
