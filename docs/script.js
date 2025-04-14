@@ -1,3 +1,21 @@
+
+function generateTooltip(effect) {
+  const map = {
+    "agility-skill": "Agility Buff (Skill)",
+    "agility-bb": "Agility Buff (BB)",
+    "pressure": "Pressure",
+    "av-up": "AV Up",
+    "av-down": "AV Down"
+  };
+
+  const label = map[effect.type] || effect.type;
+  const value = effect.value;
+  const turns = effect.turns;
+
+  return label + ": " + value + " / " + turns + " Turns";
+}
+
+
 const effectMap = {};
 
 document.getElementById("start-simulation").addEventListener("click", () => {
