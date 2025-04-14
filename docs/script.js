@@ -82,10 +82,14 @@ function renderTable(data) {
       const isActed = value >= 1000;
       const key = `unit-${unitIndex}-turn-${turnIndex}`;
       const hasEffect = effectMap[key] !== undefined;
-      const cell = `<td class='${isActed ? "acted" : ""} ${hasEffect ? "effect-applied" : ""}'>
-        ${value}
-        ${isActed ? `<button class='gear-button' data-unit='${unitIndex}' data-turn='${turnIndex}'>⚙</button>` : ""}
-      </td>`;
+      
+const tooltip = hasEffect ? generateTooltip(effectMap[key]) : "";
+const tdClass = (isActed ? "acted" : "") + (hasEffect ? " effect-applied" : "");
+const cell = '<td class="' + tdClass + '" title="' + tooltip + '">' +
+             value +
+             (isActed ? '<button class="gear-button" data-unit="' + unitIndex + '" data-turn="' + turnIndex + '">⚙</button>' : '') +
+             '</td>';
+
       return cell;
     }).join("");
     table.appendChild(tr);
