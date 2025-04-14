@@ -58,3 +58,14 @@ function renderTable(data) {
 document.getElementById("effect-close").addEventListener("click", () => {
   document.getElementById("effect-modal").classList.add("hidden");
 });
+
+document.getElementById("effect-save").addEventListener("click", () => {
+  const type = document.getElementById("effect-type").value;
+  const value = parseInt(document.getElementById("effect-value").value) || 0;
+  const turns = parseInt(document.getElementById("effect-turns").value) || 1;
+  const targets = Array.from(document.querySelectorAll(".effect-target:checked")).map(cb => parseInt(cb.value));
+
+  console.log("Effect Saved:", { type, value, turns, targets });
+
+  document.getElementById("effect-modal").classList.add("hidden");
+});
