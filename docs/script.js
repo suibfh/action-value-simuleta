@@ -1,16 +1,59 @@
+const effectMap = {};
+
 document.getElementById("start-simulation").addEventListener("click", () => {
-  const agility = [];
+  const agilityBase = [];
   for (let i = 1; i <= 10; i++) {
     const val = parseInt(document.getElementById(`agility-${i}`).value) || 0;
-    agility.push(val);
+    agilityBase.push(val);
   }
 
-  const result = Array.from({ length: 10 }, () => []);
+  const agilityCurrent = agilityBase.slice();
   const actionValue = new Array(10).fill(0);
+  const result = Array.from({ length: 10 }, () => []);
+
+  const activeEffects = Array.from({ length: 10 }, () => ({
+    skill: 0,
+    bb: 0,
+    pressure: false
+  }));
 
   for (let turn = 0; turn < 50; turn++) {
+    // Apply effectMap entries that activate this turn
+    for (let key in effectMap) {
+      const [_, unitStr, __, turnStr] = key.split(/[-]/);
+      const unit = parseInt(unitStr);
+      const effectTurn = parseInt(turnStr);
+      if (effectTurn === turn - 1) {
+        const eff = effectMap[key];
+        eff.targets.forEach(t => {
+          const target = activeEffects[t];
+          if (eff.type === "agility-skill") {
+            target.skill = Math.max(target.skill, eff.value);
+          } else if (eff.type === "agility-bb") {
+            target.bb = Math.max(target.bb, eff.value);
+          } else if (eff.type === "pressure") {
+            target.pressure = true;
+          } else if (eff.type === "av-up") {
+            actionValue[t] += eff.value;
+          } else if (eff.type === "av-down") {
+            actionValue[t] -= eff.value;
+          }
+        });
+      }
+    }
+
+    // Calculate agility-based action value
     for (let i = 0; i < 10; i++) {
-      actionValue[i] += agility[i] + 100;
+      let agi = agilityBase[i];
+      const { skill, bb, pressure } = activeEffects[i];
+
+      if (pressure) agi += Math.floor(agi * -0.3);
+      if (skill > 0) agi += Math.floor(agi * (skill / 100));
+      if (bb > 0) agi += Math.floor(agi * (bb / 100));
+
+      agilityCurrent[i] = agi;
+
+      actionValue[i] += agi + 100;
       result[i][turn] = actionValue[i];
     }
 
@@ -23,8 +66,6 @@ document.getElementById("start-simulation").addEventListener("click", () => {
 
   renderTable(result);
 });
-
-const effectMap = {}; // e.g., {"unit-0-turn-3": { type, value, turns, targets }}
 
 function renderTable(data) {
   const container = document.getElementById("simulation-result");
@@ -75,7 +116,6 @@ document.getElementById("effect-save").addEventListener("click", () => {
 
   const unit = document.getElementById("effect-modal").dataset.unit;
   const turn = document.getElementById("effect-modal").dataset.turn;
-
   const key = `unit-${unit}-turn-${turn}`;
   effectMap[key] = { type, value, turns, targets };
 

@@ -25,6 +25,10 @@ th, td {
   font-weight: bold;
 }
 
+.effect-applied {
+  background-color: #fff7cc;
+}
+
 .gear-button {
   background: none;
   border: none;
