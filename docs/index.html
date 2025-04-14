@@ -3,38 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BFH Action Order Simulator v001</title>
+  <title>BFH Action Order Simulator v003</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>BFH 行動順シミュレーター - v001</h1>
+  <h1>BFH Action Order Simulator - v003</h1>
 
   <section>
-    <h2>ユニット敏捷入力</h2>
+    <h2>Unit Agility Input</h2>
     <table id="agility-table">
       <thead>
-        <tr><th>ユニット</th><th>敏捷</th></tr>
+        <tr><th>Unit</th><th>Agility</th></tr>
       </thead>
       <tbody>
-        <!-- ユニット1〜10の入力欄を生成 -->
-        <!-- JSでも生成できるが、v001ではHTMLで明示的に記述 -->
-        <tr><td>ユニット1</td><td><input type='number' id='agility-1' min='0' /></td></tr>
-<tr><td>ユニット2</td><td><input type='number' id='agility-2' min='0' /></td></tr>
-<tr><td>ユニット3</td><td><input type='number' id='agility-3' min='0' /></td></tr>
-<tr><td>ユニット4</td><td><input type='number' id='agility-4' min='0' /></td></tr>
-<tr><td>ユニット5</td><td><input type='number' id='agility-5' min='0' /></td></tr>
-<tr><td>ユニット6</td><td><input type='number' id='agility-6' min='0' /></td></tr>
-<tr><td>ユニット7</td><td><input type='number' id='agility-7' min='0' /></td></tr>
-<tr><td>ユニット8</td><td><input type='number' id='agility-8' min='0' /></td></tr>
-<tr><td>ユニット9</td><td><input type='number' id='agility-9' min='0' /></td></tr>
-<tr><td>ユニット10</td><td><input type='number' id='agility-10' min='0' /></td></tr>
+        <tr><td>Unit 1</td><td><input type='number' id='agility-1' min='0' /></td></tr>
+<tr><td>Unit 2</td><td><input type='number' id='agility-2' min='0' /></td></tr>
+<tr><td>Unit 3</td><td><input type='number' id='agility-3' min='0' /></td></tr>
+<tr><td>Unit 4</td><td><input type='number' id='agility-4' min='0' /></td></tr>
+<tr><td>Unit 5</td><td><input type='number' id='agility-5' min='0' /></td></tr>
+<tr><td>Unit 6</td><td><input type='number' id='agility-6' min='0' /></td></tr>
+<tr><td>Unit 7</td><td><input type='number' id='agility-7' min='0' /></td></tr>
+<tr><td>Unit 8</td><td><input type='number' id='agility-8' min='0' /></td></tr>
+<tr><td>Unit 9</td><td><input type='number' id='agility-9' min='0' /></td></tr>
+<tr><td>Unit 10</td><td><input type='number' id='agility-10' min='0' /></td></tr>
       </tbody>
     </table>
-    <button id="start-simulation">演算開始</button>
+    <button id="start-simulation">Start Simulation</button>
   </section>
 
   <section>
-    <h2>演算結果（行動値）</h2>
+    <h2>Simulation Result (Action Value)</h2>
     <div id="simulation-result"></div>
   </section>
 
