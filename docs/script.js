@@ -185,3 +185,89 @@ function updateEffectSummary(unit, turn) {
 
   summaryContainer.innerText = lines.join("\n");
 }
+
+
+// Delete button logic
+document.getElementById("effect-delete").addEventListener("click", () => {
+  const unit = currentModalContext.unit;
+  const turn = currentModalContext.turn;
+  const key = `unit-${unit}-turn-${turn}`;
+  if (effectMap[key]) {
+    delete effectMap[key];
+    alert("Effect deleted.");
+    document.getElementById("effect-modal").classList.add("hidden");
+    simulate();
+  }
+});
+
+// Prefill modal fields when opened
+function prefillModal(unit, turn) {
+  const key = `unit-${unit}-turn-${turn}`;
+  const effect = effectMap[key];
+  if (!effect) return;
+
+  document.getElementById("effect-type").value = effect.type;
+  document.getElementById("effect-value").value = effect.value;
+  document.getElementById("effect-turns").value = effect.turns;
+
+  document.querySelectorAll(".effect-target").forEach(cb => {
+    cb.checked = effect.targets.includes(parseInt(cb.value));
+  });
+
+  // Update input state and summary
+  const event = new Event("change");
+  document.getElementById("effect-type").dispatchEvent(event);
+  updateEffectSummary(unit, turn);
+}
+
+// Add tooltip when rendering cells
+function renderTable(data) {
+  const container = document.getElementById("simulation-result");
+  container.innerHTML = "";
+
+  const table = document.createElement("table");
+  const header = document.createElement("tr");
+  header.innerHTML = "<th>Unit\Turn</th>" + Array.from({ length: 50 }, (_, i) => `<th>${i + 1}</th>`).join("");
+  table.appendChild(header);
+
+  data.forEach((row, unitIndex) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>Unit ${unitIndex + 1}</td>` + row.map((value, turnIndex) => {
+      const isActed = value >= 1000;
+      const key = `unit-${unitIndex}-turn-${turnIndex}`;
+      const hasEffect = effectMap[key] !== undefined;
+      const tooltip = hasEffect ? generateTooltip(effectMap[key]) : "";
+      const cell = \`<td class='\${isActed ? "acted" : ""} \${hasEffect ? "effect-applied" : ""}' title="\${tooltip}">
+        \${value}
+        \${isActed ? \`<button class='gear-button' data-unit='\${unitIndex}' data-turn='\${turnIndex}'>⚙</button>\` : ""}
+      </td>\`;
+      return cell;
+    }).join("");
+    table.appendChild(tr);
+  });
+
+  container.appendChild(table);
+
+  document.querySelectorAll(".gear-button").forEach(button => {
+    button.addEventListener("click", () => {
+      const unit = button.getAttribute("data-unit");
+      const turn = button.getAttribute("data-turn");
+      currentModalContext = { unit, turn };
+      document.getElementById("effect-modal").dataset.unit = unit;
+      document.getElementById("effect-modal").dataset.turn = turn;
+      prefillModal(unit, turn);
+      document.getElementById("effect-modal").classList.remove("hidden");
+    });
+  });
+}
+
+function generateTooltip(effect) {
+  const map = {
+    "agility-skill": "Agility Buff (Skill)",
+    "agility-bb": "Agility Buff (BB)",
+    "pressure": "Pressure",
+    "av-up": "AV Up",
+    "av-down": "AV Down"
+  };
+  return \`\${map[effect.type] || effect.type}: \${effect.value} / \${effect.turns} Turns\`;
+}
