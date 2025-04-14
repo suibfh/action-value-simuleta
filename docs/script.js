@@ -6,20 +6,24 @@ document.addEventListener("DOMContentLoaded", () => {
   const resetBtn = document.getElementById("reset-btn");
   const actionTable = document.getElementById("action-table");
 
-  const agilities = new Array(unitCount).fill(0);
+  const agilities = new Array(unitCount).fill(null);
   const actionValues = new Array(unitCount).fill(0);
-  const actionLog = Array.from({ length: turnCount }, () => []);
+  const actionLog = Array.from({ length: turnCount }, () => new Array(unitCount).fill(0));
 
   // 入力欄を生成
   for (let i = 0; i < unitCount; i++) {
     const input = document.createElement("input");
     input.type = "number";
-    input.placeholder = `ユニット${i + 1}`;
-    input.value = 0;
+    input.placeholder = `Unit ${i + 1}`;
+    input.value = "";
     input.dataset.index = i;
     input.addEventListener("input", (e) => {
       const idx = Number(e.target.dataset.index);
-      agilities[idx] = Number(e.target.value) || 0;
+      if (e.target.value === "") {
+        agilities[idx] = null;
+      } else {
+        agilities[idx] = Number(e.target.value);
+      }
     });
     agilityInputs.appendChild(input);
   }
@@ -29,16 +33,20 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < unitCount; i++) {
       actionValues[i] = 0;
     }
-    for (let i = 0; i < turnCount; i++) {
-      actionLog[i] = [];
+    for (let t = 0; t < turnCount; t++) {
+      for (let u = 0; u < unitCount; u++) {
+        actionLog[t][u] = 0;
+      }
     }
 
     for (let t = 0; t < turnCount; t++) {
       for (let u = 0; u < unitCount; u++) {
+        if (agilities[u] === null) continue;
         actionValues[u] += agilities[u];
+        actionLog[t][u] = actionValues[u];
         if (actionValues[u] >= 1000) {
-          actionValues[u] -= 1000;
-          actionLog[t].push(u);
+          // 1000超えた行動値をそのまま表示（リセットはしない）
+          // 視覚的には色で強調
         }
       }
     }
@@ -48,14 +56,16 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderTable() {
     actionTable.innerHTML = "";
     const header = document.createElement("tr");
-    header.innerHTML = `<th>演算</th>${[...Array(unitCount)].map((_, i) => `<th>ユニット${i + 1}</th>`).join("")}`;
+    header.innerHTML = `<th>Cycle</th>${[...Array(unitCount)].map((_, i) => `<th>Unit ${i + 1}</th>`).join("")}`;
     actionTable.appendChild(header);
 
     for (let t = 0; t < turnCount; t++) {
       const row = document.createElement("tr");
       row.innerHTML = `<td>${t + 1}</td>` +
         [...Array(unitCount)].map((_, u) => {
-          return `<td class="${actionLog[t].includes(u) ? "acted" : ""}">${actionLog[t].includes(u) ? "⚙" : ""}</td>`;
+          const val = actionLog[t][u];
+          const className = val >= 1000 ? "acted" : "";
+          return `<td class="${className}">${val > 0 ? Math.floor(val) : ""}</td>`;
         }).join("");
       actionTable.appendChild(row);
     }
@@ -65,8 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   resetBtn.addEventListener("click", () => {
     for (let i = 0; i < unitCount; i++) {
-      agilityInputs.children[i].value = 0;
-      agilities[i] = 0;
+      agilityInputs.children[i].value = "";
+      agilities[i] = null;
     }
     actionTable.innerHTML = "";
   });
