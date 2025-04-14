@@ -147,3 +147,41 @@ document.getElementById("effect-save").addEventListener("click", () => {
   console.log("Effect stored:", key, effectMap[key]);
   document.getElementById("effect-modal").classList.add("hidden");
 });
+
+
+// Reset effect map and refresh view
+document.getElementById("reset-effects").addEventListener("click", () => {
+  if (confirm("Are you sure you want to reset all effects?")) {
+    for (const key in effectMap) delete effectMap[key];
+    simulate();  // re-render with cleared effects
+  }
+});
+
+// Update effect summary in modal
+function updateEffectSummary(unit, turn) {
+  const summaryContainer = document.getElementById("effect-summary");
+  const key = `unit-${unit}-turn-${turn}`;
+  const effect = effectMap[key];
+  if (!effect) {
+    summaryContainer.innerText = "No effect set.";
+    return;
+  }
+
+  const effectNameMap = {
+    "agility-skill": "Agility Buff (Skill)",
+    "agility-bb": "Agility Buff (BB)",
+    "pressure": "Pressure",
+    "av-up": "AV Up",
+    "av-down": "AV Down"
+  };
+
+  const targetList = effect.targets.map(t => `Unit ${t + 1}`).join(", ");
+  const lines = [
+    `Effect: ${effectNameMap[effect.type] || effect.type}`,
+    `Value: ${effect.value}`,
+    `Turns: ${effect.turns}`,
+    `Targets: ${targetList}`
+  ];
+
+  summaryContainer.innerText = lines.join("\n");
+}

@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BFH Action Order Simulator - v011</title>
+  <title>BFH Action Order Simulator - v013</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>BFH Action Order Simulator - v011</h1>
+  <h1>BFH Action Order Simulator - v013</h1>
 
   <section>
     <h2>Unit Agility Input</h2>
@@ -27,6 +27,7 @@
       </tbody>
     </table>
     <button id="start-simulation">Start Simulation</button>
+    <button id="reset-effects">Reset Effects</button>
     <p class="reminder">※ After saving effects, don't forget to press "Start Simulation" to update the results.</p>
   </section>
 
@@ -61,6 +62,7 @@
 <label><input type='checkbox' class='effect-target' value='8' /> Unit 9</label><br/>
 <label><input type='checkbox' class='effect-target' value='9' /> Unit 10</label><br/>
       </label><br/>
+      <div id="effect-summary" style="white-space: pre-wrap; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 5px;"></div>
       <button id="effect-save">Save</button>
       <button id="effect-close">Cancel</button>
     </div>
@@ -68,7 +70,7 @@
 
   <script src="script.js"></script>
   <script>
-    // Clear and disable input fields appropriately
+    // Disable input for pressure/av types + show effect summary
     document.addEventListener("DOMContentLoaded", () => {
       const effectType = document.getElementById("effect-type");
       const valueField = document.getElementById("effect-value");
@@ -76,7 +78,6 @@
 
       function updateInputState() {
         const type = effectType.value;
-
         if (type === "pressure") {
           valueField.value = "";
           valueField.disabled = true;
@@ -92,7 +93,7 @@
       }
 
       effectType.addEventListener("change", updateInputState);
-      updateInputState(); // 初期化
+      updateInputState();
     });
   </script>
 </body>
