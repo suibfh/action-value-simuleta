@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BFH Action Order Simulator - v008</title>
+  <title>BFH Action Order Simulator - v010</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>BFH Action Order Simulator - v008</h1>
+  <h1>BFH Action Order Simulator - v010</h1>
 
   <section>
     <h2>Unit Agility Input</h2>
@@ -67,5 +67,30 @@
   </div>
 
   <script src="script.js"></script>
+  <script>
+    // 動的に入力制御
+    document.addEventListener("DOMContentLoaded", () => {
+      const effectType = document.getElementById("effect-type");
+      const valueField = document.getElementById("effect-value");
+      const turnField = document.getElementById("effect-turns");
+
+      function updateInputState() {
+        const type = effectType.value;
+        if (type === "pressure") {
+          valueField.disabled = true;
+          turnField.disabled = false;
+        } else if (type === "av-up" || type === "av-down") {
+          valueField.disabled = false;
+          turnField.disabled = true;
+        } else {
+          valueField.disabled = false;
+          turnField.disabled = false;
+        }
+      }
+
+      effectType.addEventListener("change", updateInputState);
+      updateInputState(); // 初期化
+    });
+  </script>
 </body>
 </html>
