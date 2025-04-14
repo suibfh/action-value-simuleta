@@ -12,7 +12,9 @@
   <section>
     <h2>Unit Agility Input</h2>
     <table id="agility-table">
-      <thead><tr><th>Unit</th><th>Agility</th></tr></thead>
+      <thead>
+        <tr><th>Unit</th><th>Agility</th></tr>
+      </thead>
       <tbody>
         <tr><td>Unit 1</td><td><input type='number' id='agility-1' min='0' /></td></tr>
 <tr><td>Unit 2</td><td><input type='number' id='agility-2' min='0' /></td></tr>
@@ -37,30 +39,7 @@
   <div id="effect-modal" class="modal hidden">
     <div class="modal-content">
       <h3>Set Effect</h3>
-      <label>Effect Type:
-        <select id="effect-type">
-          <option value="agility-skill">Agility Buff (Skill)</option>
-          <option value="agility-bb">Agility Buff (BB)</option>
-          <option value="pressure">Pressure</option>
-          <option value="av-up">Action Value Up</option>
-          <option value="av-down">Action Value Down</option>
-        </select>
-      </label>
-      <label>Value: <input type="number" id="effect-value" /></label>
-      <label>Turns: <input type="number" id="effect-turns" /></label>
-      <label>Targets:<br />
-        <div id="effect-targets"><label><input type='checkbox' value='1' /> Unit 1</label><br/>
-<label><input type='checkbox' value='2' /> Unit 2</label><br/>
-<label><input type='checkbox' value='3' /> Unit 3</label><br/>
-<label><input type='checkbox' value='4' /> Unit 4</label><br/>
-<label><input type='checkbox' value='5' /> Unit 5</label><br/>
-<label><input type='checkbox' value='6' /> Unit 6</label><br/>
-<label><input type='checkbox' value='7' /> Unit 7</label><br/>
-<label><input type='checkbox' value='8' /> Unit 8</label><br/>
-<label><input type='checkbox' value='9' /> Unit 9</label><br/>
-<label><input type='checkbox' value='10' /> Unit 10</label><br/></div>
-      </label>
-      <button id="effect-save">Save</button>
+      <p>This is a placeholder modal. Input fields will be added later.</p>
       <button id="effect-close">Close</button>
     </div>
   </div>
