@@ -24,6 +24,8 @@ document.getElementById("start-simulation").addEventListener("click", () => {
   renderTable(result);
 });
 
+const effectMap = {}; // e.g., {"unit-0-turn-3": { type, value, turns, targets }}
+
 function renderTable(data) {
   const container = document.getElementById("simulation-result");
   container.innerHTML = "";
@@ -37,7 +39,9 @@ function renderTable(data) {
     const tr = document.createElement("tr");
     tr.innerHTML = `<td>Unit ${unitIndex + 1}</td>` + row.map((value, turnIndex) => {
       const isActed = value >= 1000;
-      const cell = `<td class='${isActed ? "acted" : ""}'>
+      const key = `unit-${unitIndex}-turn-${turnIndex}`;
+      const hasEffect = effectMap[key] !== undefined;
+      const cell = `<td class='${isActed ? "acted" : ""} ${hasEffect ? "effect-applied" : ""}'>
         ${value}
         ${isActed ? `<button class='gear-button' data-unit='${unitIndex}' data-turn='${turnIndex}'>⚙</button>` : ""}
       </td>`;
@@ -50,6 +54,10 @@ function renderTable(data) {
 
   document.querySelectorAll(".gear-button").forEach(button => {
     button.addEventListener("click", () => {
+      const unit = button.getAttribute("data-unit");
+      const turn = button.getAttribute("data-turn");
+      document.getElementById("effect-modal").dataset.unit = unit;
+      document.getElementById("effect-modal").dataset.turn = turn;
       document.getElementById("effect-modal").classList.remove("hidden");
     });
   });
@@ -65,7 +73,13 @@ document.getElementById("effect-save").addEventListener("click", () => {
   const turns = parseInt(document.getElementById("effect-turns").value) || 1;
   const targets = Array.from(document.querySelectorAll(".effect-target:checked")).map(cb => parseInt(cb.value));
 
-  console.log("Effect Saved:", { type, value, turns, targets });
+  const unit = document.getElementById("effect-modal").dataset.unit;
+  const turn = document.getElementById("effect-modal").dataset.turn;
+
+  const key = `unit-${unit}-turn-${turn}`;
+  effectMap[key] = { type, value, turns, targets };
+
+  console.log("Effect stored:", key, effectMap[key]);
 
   document.getElementById("effect-modal").classList.add("hidden");
 });
