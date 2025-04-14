@@ -261,6 +261,7 @@ function renderTable(data) {
   });
 }
 
+
 function generateTooltip(effect) {
   const map = {
     "agility-skill": "Agility Buff (Skill)",
@@ -269,5 +270,12 @@ function generateTooltip(effect) {
     "av-up": "AV Up",
     "av-down": "AV Down"
   };
-  return \`\${map[effect.type] || effect.type}: \${effect.value} / \${effect.turns} Turns\`;
+
+  const label = map[effect.type] || effect.type;
+  const value = effect.value;
+  const turns = effect.turns;
+
+  const tooltip = `${label}: ${value} / ${turns} Turns`;
+  return tooltip;
 }
+
