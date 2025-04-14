@@ -66,7 +66,7 @@ function simulate() {
         }
       });
 
-      if (pressure) agi += Math.floor(agi * -0.3);
+      if (pressure) agi -= Math.floor(agi * 0.3);
       if (skill > 0) agi += Math.floor(agi * (skill / 100));
       if (bb > 0) agi += Math.floor(agi * (bb / 100));
 
