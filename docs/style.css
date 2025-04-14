@@ -1,56 +1,37 @@
 body {
   font-family: sans-serif;
   padding: 20px;
-  background-color: #f9f9f9;
+  background: #f9f9f9;
 }
 
-h1 {
-  margin-bottom: 10px;
+.inputs {
+  margin-bottom: 20px;
+}
+
+#agility-inputs input {
+  width: 60px;
+  margin: 4px;
+}
+
+button {
+  margin: 8px 4px;
+  padding: 6px 12px;
+  font-size: 14px;
 }
 
 table {
   border-collapse: collapse;
-  margin: 10px 0;
   width: 100%;
+  background: white;
 }
 
 th, td {
   border: 1px solid #ccc;
-  padding: 4px 8px;
   text-align: center;
+  padding: 4px;
 }
 
 .acted {
-  background-color: #d1ffd1;
+  background: #e0ffe0;
   font-weight: bold;
-}
-
-.effect-applied {
-  background-color: #fff7cc;
-}
-
-.gear-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1em;
-}
-
-.modal.hidden {
-  display: none;
-}
-.modal {
-  position: fixed;
-  top: 20%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 20px;
-  border: 1px solid #ccc;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  z-index: 1000;
-}
-.modal-content {
-  max-width: 400px;
-  margin: auto;
 }

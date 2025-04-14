@@ -2,99 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BFH Action Order Simulator - v013</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BFH Action Order Simulator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>BFH Action Order Simulator - v013</h1>
+  <h1>BFH 行動順シミュレーター</h1>
 
-  <section>
-    <h2>Unit Agility Input</h2>
-    <table id="agility-table">
-      <thead><tr><th>Unit</th><th>Agility</th></tr></thead>
-      <tbody>
-        <tr><td>Unit 1</td><td><input type='number' id='agility-1' min='0' /></td></tr>
-<tr><td>Unit 2</td><td><input type='number' id='agility-2' min='0' /></td></tr>
-<tr><td>Unit 3</td><td><input type='number' id='agility-3' min='0' /></td></tr>
-<tr><td>Unit 4</td><td><input type='number' id='agility-4' min='0' /></td></tr>
-<tr><td>Unit 5</td><td><input type='number' id='agility-5' min='0' /></td></tr>
-<tr><td>Unit 6</td><td><input type='number' id='agility-6' min='0' /></td></tr>
-<tr><td>Unit 7</td><td><input type='number' id='agility-7' min='0' /></td></tr>
-<tr><td>Unit 8</td><td><input type='number' id='agility-8' min='0' /></td></tr>
-<tr><td>Unit 9</td><td><input type='number' id='agility-9' min='0' /></td></tr>
-<tr><td>Unit 10</td><td><input type='number' id='agility-10' min='0' /></td></tr>
-      </tbody>
-    </table>
-    <button id="start-simulation">Start Simulation</button>
-    <button id="reset-effects">Reset Effects</button>
-    <p class="reminder">※ After saving effects, don't forget to press "Start Simulation" to update the results.</p>
-  </section>
+  <div class="inputs">
+    <h2>敏捷入力</h2>
+    <div id="agility-inputs"></div>
+    <button id="start-btn">Start Simulation</button>
+    <button id="reset-btn">Reset</button>
+  </div>
 
-  <section>
-    <h2>Simulation Result (Action Value)</h2>
-    <div id="simulation-result"></div>
-  </section>
-
-  <div id="effect-modal" class="modal hidden">
-    <div class="modal-content">
-      <h3>Set Effect</h3>
-      <label>Effect Type:
-        <select id="effect-type">
-          <option value="agility-skill">Agility Buff (Skill)</option>
-          <option value="agility-bb">Agility Buff (BB)</option>
-          <option value="pressure">Pressure</option>
-          <option value="av-up">Action Value Up</option>
-          <option value="av-down">Action Value Down</option>
-        </select>
-      </label><br/>
-      <label>Value: <input type="number" id="effect-value" /></label><br/>
-      <label>Turns: <input type="number" id="effect-turns" /></label><br/>
-      <label>Target Units:<br/>
-        <label><input type='checkbox' class='effect-target' value='0' /> Unit 1</label><br/>
-<label><input type='checkbox' class='effect-target' value='1' /> Unit 2</label><br/>
-<label><input type='checkbox' class='effect-target' value='2' /> Unit 3</label><br/>
-<label><input type='checkbox' class='effect-target' value='3' /> Unit 4</label><br/>
-<label><input type='checkbox' class='effect-target' value='4' /> Unit 5</label><br/>
-<label><input type='checkbox' class='effect-target' value='5' /> Unit 6</label><br/>
-<label><input type='checkbox' class='effect-target' value='6' /> Unit 7</label><br/>
-<label><input type='checkbox' class='effect-target' value='7' /> Unit 8</label><br/>
-<label><input type='checkbox' class='effect-target' value='8' /> Unit 9</label><br/>
-<label><input type='checkbox' class='effect-target' value='9' /> Unit 10</label><br/>
-      </label><br/>
-      <div id="effect-summary" style="white-space: pre-wrap; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 5px;"></div>
-      <button id="effect-save">Save</button>
-      <button id="effect-delete">Delete Effect</button> <button id="effect-close">Cancel</button>
-    </div>
+  <div class="table-wrapper">
+    <h2>行動順シミュレーション（50演算）</h2>
+    <table id="action-table"></table>
   </div>
 
   <script src="script.js"></script>
-  <script>
-    // Disable input for pressure/av types + show effect summary
-    document.addEventListener("DOMContentLoaded", () => {
-      const effectType = document.getElementById("effect-type");
-      const valueField = document.getElementById("effect-value");
-      const turnField = document.getElementById("effect-turns");
-
-      function updateInputState() {
-        const type = effectType.value;
-        if (type === "pressure") {
-          valueField.value = "";
-          valueField.disabled = true;
-          turnField.disabled = false;
-        } else if (type === "av-up" || type === "av-down") {
-          turnField.value = "";
-          valueField.disabled = false;
-          turnField.disabled = true;
-        } else {
-          valueField.disabled = false;
-          turnField.disabled = false;
-        }
-      }
-
-      effectType.addEventListener("change", updateInputState);
-      updateInputState();
-    });
-  </script>
 </body>
 </html>
