@@ -102,7 +102,10 @@ function renderTable(data) {
       const hasEffect = effectMap[key] !== undefined;
       
 
+
 const tooltip = hasEffect ? generateTooltip(effectMap[key]) : "";
+console.log("rendering key:", key, "hasEffect:", hasEffect, "value:", effectMap[key]);
+
 console.log("tooltip:", tooltip);  // debug
 const tdClass = (isActed ? "acted" : "") + (hasEffect ? " effect-applied" : "");
 const cell = '<td class="' + tdClass + '" title="' + tooltip + '">' +
