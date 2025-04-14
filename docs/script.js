@@ -1,4 +1,3 @@
-
 function generateTooltip(effect) {
   const map = {
     "agility-skill": "Agility Buff (Skill)",
@@ -150,4 +149,10 @@ document.getElementById("effect-save").addEventListener("click", () => {
   console.log("Effect stored:", key, effectMap[key]);
 
   document.getElementById("effect-modal").classList.add("hidden");
+});
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("Delete handler attached");
+  
 });
