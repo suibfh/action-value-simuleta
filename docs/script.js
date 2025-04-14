@@ -1,3 +1,5 @@
+let currentModalContext = { unit: null, turn: null };
+
 function generateTooltip(effect) {
   const map = {
     "agility-skill": "Agility Buff (Skill)",
@@ -162,7 +164,13 @@ window.addEventListener("load", function () {
   console.log("Delete handler bound via window.onload");
   const btn = document.getElementById("effect-delete");
   if (btn) {
-    btn.addEventListener("click", () => {
+    
+btn.addEventListener("click", () => {
+  if (!currentModalContext || currentModalContext.unit === null || currentModalContext.turn === null) {
+    console.warn("Delete attempted with no current context");
+    return;
+  }
+
       const unit = parseInt(currentModalContext.unit);
       const turn = parseInt(currentModalContext.turn);
       const key = `unit-${unit}-turn-${turn}`;
