@@ -156,3 +156,31 @@ document.addEventListener("DOMContentLoaded", function () {
   console.log("Delete handler attached");
   
 });
+
+
+window.addEventListener("load", function () {
+  console.log("Delete handler bound via window.onload");
+  const btn = document.getElementById("effect-delete");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      const unit = parseInt(currentModalContext.unit);
+      const turn = parseInt(currentModalContext.turn);
+      const key = `unit-${unit}-turn-${turn}`;
+      console.log("Executing delete for:", key);
+
+      if (effectMap.hasOwnProperty(key)) {
+        delete effectMap[key];
+        console.log("Effect deleted:", key);
+      } else {
+        console.warn("No effect found for key:", key);
+      }
+
+      console.log("effectMap after delete:", JSON.stringify(effectMap, null, 2));
+      document.getElementById("effect-modal").classList.add("hidden");
+      simulate();
+      renderTable(actionLog);
+    });
+  } else {
+    console.warn("effect-delete button not found in DOM");
+  }
+});
