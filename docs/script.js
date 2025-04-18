@@ -1,83 +1,40 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const unitCount = 10;
-  const turnCount = 50;
-  const agilityInputs = document.getElementById("agility-inputs");
-  const startBtn = document.getElementById("start-btn");
-  const resetBtn = document.getElementById("reset-btn");
-  const actionTable = document.getElementById("action-table");
+document.getElementById('simulate').addEventListener('click', simulate);
 
-  const agilities = new Array(unitCount).fill(null);
-  const actionValues = new Array(unitCount).fill(0);
-  const actionLog = Array.from({ length: turnCount }, () => new Array(unitCount).fill(0));
+function simulate() {
+  const agi = [];
+  for (let i = 1; i <= 10; i++) {
+    const val = parseInt(document.getElementById('agi' + i).value, 10);
+    agi.push(isNaN(val) ? 0 : val);
+  }
 
-  // 入力欄を生成
-  for (let i = 0; i < unitCount; i++) {
-    const input = document.createElement("input");
-    input.type = "number";
-    input.placeholder = `Unit ${i + 1}`;
-    input.value = "";
-    input.dataset.index = i;
-    input.addEventListener("input", (e) => {
-      const idx = Number(e.target.dataset.index);
-      if (e.target.value === "") {
-        agilities[idx] = null;
+  const av = new Array(10).fill(0);
+  const tbody = document.querySelector('#log-table tbody');
+  tbody.innerHTML = '';
+
+  const MAX_STEP = 50;
+
+  for (let step = 1; step <= MAX_STEP; step++) {
+    for (let i = 0; i < 10; i++) {
+      av[i] += agi[i] + 100;
+    }
+
+    const row = document.createElement('tr');
+    const stepCell = document.createElement('td');
+    stepCell.textContent = step;
+    row.appendChild(stepCell);
+
+    for (let i = 0; i < 10; i++) {
+      const cell = document.createElement('td');
+      if (av[i] >= 1000) {
+        cell.classList.add('action');
+        cell.textContent = av[i];
+        av[i] = 0;
       } else {
-        agilities[idx] = Number(e.target.value);
+        cell.textContent = av[i];
       }
-    });
-    agilityInputs.appendChild(input);
+      row.appendChild(cell);
+    }
+
+    tbody.appendChild(row);
   }
-
-  function simulate() {
-    // 初期化
-    for (let i = 0; i < unitCount; i++) {
-      actionValues[i] = 0;
-    }
-    for (let t = 0; t < turnCount; t++) {
-      for (let u = 0; u < unitCount; u++) {
-        actionLog[t][u] = 0;
-      }
-    }
-
-    for (let t = 0; t < turnCount; t++) {
-      for (let u = 0; u < unitCount; u++) {
-        if (agilities[u] === null) continue;
-        actionValues[u] += agilities[u];
-        actionLog[t][u] = actionValues[u];
-        if (actionValues[u] >= 1000) {
-          // 1000超えた行動値をそのまま表示（リセットはしない）
-          // 視覚的には色で強調
-        }
-      }
-    }
-    renderTable();
-  }
-
-  function renderTable() {
-    actionTable.innerHTML = "";
-    const header = document.createElement("tr");
-    header.innerHTML = `<th>Cycle</th>${[...Array(unitCount)].map((_, i) => `<th>Unit ${i + 1}</th>`).join("")}`;
-    actionTable.appendChild(header);
-
-    for (let t = 0; t < turnCount; t++) {
-      const row = document.createElement("tr");
-      row.innerHTML = `<td>${t + 1}</td>` +
-        [...Array(unitCount)].map((_, u) => {
-          const val = actionLog[t][u];
-          const className = val >= 1000 ? "acted" : "";
-          return `<td class="${className}">${val > 0 ? Math.floor(val) : ""}</td>`;
-        }).join("");
-      actionTable.appendChild(row);
-    }
-  }
-
-  startBtn.addEventListener("click", simulate);
-
-  resetBtn.addEventListener("click", () => {
-    for (let i = 0; i < unitCount; i++) {
-      agilityInputs.children[i].value = "";
-      agilities[i] = null;
-    }
-    actionTable.innerHTML = "";
-  });
-});
+}
