@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>BFH Action Order Simulator v003</title>
+  <title>BFH Action Order Simulator v004</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -13,27 +13,54 @@
     <table>
       <tbody>
         <tr>
-          <td>Unit&nbsp;1&nbsp;<input type="number" id="agi1" min="0" placeholder="AGI" /></td>
-          <td>Unit&nbsp;2&nbsp;<input type="number" id="agi2" min="0" placeholder="AGI" /></td>
-          <td>Unit&nbsp;3&nbsp;<input type="number" id="agi3" min="0" placeholder="AGI" /></td>
-          <td>Unit&nbsp;4&nbsp;<input type="number" id="agi4" min="0" placeholder="AGI" /></td>
-          <td>Unit&nbsp;5&nbsp;<input type="number" id="agi5" min="0" placeholder="AGI" /></td>
+          <td>U1 <input type="number" id="agi1" min="0" placeholder="AGI" /></td>
+          <td>U2 <input type="number" id="agi2" min="0" placeholder="AGI" /></td>
+          <td>U3 <input type="number" id="agi3" min="0" placeholder="AGI" /></td>
+          <td>U4 <input type="number" id="agi4" min="0" placeholder="AGI" /></td>
+          <td>U5 <input type="number" id="agi5" min="0" placeholder="AGI" /></td>
         </tr>
         <tr>
-          <td>Unit&nbsp;6&nbsp;<input type="number" id="agi6" min="0" placeholder="AGI" /></td>
-          <td>Unit&nbsp;7&nbsp;<input type="number" id="agi7" min="0" placeholder="AGI" /></td>
-          <td>Unit&nbsp;8&nbsp;<input type="number" id="agi8" min="0" placeholder="AGI" /></td>
-          <td>Unit&nbsp;9&nbsp;<input type="number" id="agi9" min="0" placeholder="AGI" /></td>
-          <td>Unit&nbsp;10&nbsp;<input type="number" id="agi10" min="0" placeholder="AGI" /></td>
+          <td>U6 <input type="number" id="agi6" min="0" placeholder="AGI" /></td>
+          <td>U7 <input type="number" id="agi7" min="0" placeholder="AGI" /></td>
+          <td>U8 <input type="number" id="agi8" min="0" placeholder="AGI" /></td>
+          <td>U9 <input type="number" id="agi9" min="0" placeholder="AGI" /></td>
+          <td>U10 <input type="number" id="agi10" min="0" placeholder="AGI" /></td>
         </tr>
       </tbody>
     </table>
+  </section>
 
+  <section id="effects">
+    <h2>Optional Effects (single entry each for prototype)</h2>
+    <div class="effect-block">
+      <h3>AGI Buff (+%)</h3>
+      Target Unit #
+      <input type="number" id="buffTarget" min="1" max="10" />
+      Value %
+      <input type="number" id="buffValue" />
+      Turns
+      <input type="number" id="buffTurns" min="1" />
+    </div>
+    <div class="effect-block">
+      <h3>Heavy Pressure (-30% AGI)</h3>
+      Target Unit #
+      <input type="number" id="hpTarget" min="1" max="10" />
+      Turns
+      <input type="number" id="hpTurns" min="1" />
+    </div>
+    <div class="effect-block">
+      <h3>AV Up / Down (±)</h3>
+      Target Unit #
+      <input type="number" id="avTarget" min="1" max="10" />
+      Value
+      <input type="number" id="avValue" />
+      (positive = up, negative = down)
+    </div>
     <button id="simulate">Simulate</button>
   </section>
 
   <section id="log-container">
-    <h2>Simulation Log (50 Computations)</h2>
+    <h2>Simulation Log (max 50 computations)</h2>
     <table id="log-table">
       <thead>
         <tr>

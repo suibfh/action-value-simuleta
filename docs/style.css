@@ -3,7 +3,7 @@ body {
   margin: 1rem;
 }
 
-h1, h2 {
+h1, h2, h3 {
   margin: 0.5rem 0;
 }
 
@@ -12,11 +12,11 @@ table {
 }
 
 table, th, td {
-  border: 1px solid #666;
+  border: 1px solid #555;
 }
 
 th, td {
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.4rem;
   text-align: center;
   min-width: 50px;
 }
@@ -24,4 +24,8 @@ th, td {
 .action {
   background: #c3f5c3;
   font-weight: bold;
+}
+
+.effect-block {
+  margin-bottom: 1rem;
 }
