@@ -72,18 +72,18 @@ function simulate(){
       av[i]+=ag+100;
     }
     const tr=document.createElement('tr');
-    const actors=[];
-    for(let i=0;i<10;i++){if(av[i]>=1000)actors.push({idx:i,av:av[i]});}
-    actors.sort((a,b)=>b.av-a.av);
     tr.innerHTML='<td>'+step+'</td>'+av.map((v,i)=>'<td class="'+(v>=1000?'action':'')+'">'+v+'</td>').join('');
-    tbody.appendChild(tr);
-    tbody.querySelectorAll('td.action').forEach(cell=>{
+    document.querySelector('#log-table tbody').appendChild(tr);
+    document.querySelectorAll('td.action').forEach(cell=>{
       cell.onclick=()=>{
         const st = +cell.parentNode.firstChild.textContent;
         const idx = Array.from(cell.parentNode.children).indexOf(cell);
         openPanel(st, idx);
       };
     });
+    const actors=[];
+    for(let i=0;i<10;i++){if(av[i]>=1000)actors.push({idx:i,av:av[i]});}
+    actors.sort((a,b)=>b.av-a.av);
     actors.forEach(a=>{av[a.idx]=0;eff[a.idx].forEach(e=>{if(e.rem>0)e.rem--;});});
   }
   window.scrollTo({top:startY,behavior:'auto'});
