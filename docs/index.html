@@ -1,52 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>BFH Action Order Simulator v011</title>
+  <title>BFH 行動順シミュレーター</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <header class="card">
-      <h1>BFH Action Order Simulator</h1>
+      <h1>BFH 行動順シミュレーター</h1>
     </header>
     <div class="main">
       <aside class="card input-panel">
         <section id="tests">
-          <h2>Test Scenarios</h2>
+          <h2>テストシナリオ</h2>
           <select id="scenarioSelect">
-            <option value="">-- Select Scenario --</option>
-            <option value="scenario1">Self Buff 2-turn</option>
-            <option value="scenario2">Same-step Heavy before Buff</option>
-            <option value="scenario3">Same-step Heavy after Buff</option>
-            <option value="scenario4">Cross-step Buff</option>
+            <option value="">-- シナリオ選択 --</option>
+            <option value="scenario1">自己付与 2ターン</option>
+            <option value="scenario2">同演算 先行重圧→バフ</option>
+            <option value="scenario3">同演算 先行バフ→重圧</option>
+            <option value="scenario4">別演算付与</option>
           </select>
-          <button class="btn" type="button" id="loadScenario">Load Scenario</button>
+          <button class="btn" type="button" id="loadScenario">シナリオ読み込み</button>
         </section>
         <section id="inputs">
-          <h2>Initial AGI Values</h2>
+          <h2>初期敏捷値</h2>
           <div class="agi-grid">
-            <div class="agi-input"><label>U1</label><input type="number" id="agi1" min="0" placeholder="" /></div><div class="agi-input"><label>U2</label><input type="number" id="agi2" min="0" placeholder="" /></div><div class="agi-input"><label>U3</label><input type="number" id="agi3" min="0" placeholder="" /></div><div class="agi-input"><label>U4</label><input type="number" id="agi4" min="0" placeholder="" /></div><div class="agi-input"><label>U5</label><input type="number" id="agi5" min="0" placeholder="" /></div><div class="agi-input"><label>U6</label><input type="number" id="agi6" min="0" placeholder="" /></div><div class="agi-input"><label>U7</label><input type="number" id="agi7" min="0" placeholder="" /></div><div class="agi-input"><label>U8</label><input type="number" id="agi8" min="0" placeholder="" /></div><div class="agi-input"><label>U9</label><input type="number" id="agi9" min="0" placeholder="" /></div><div class="agi-input"><label>U10</label><input type="number" id="agi10" min="0" placeholder="" /></div>
+            <div class="agi-input"><label>ユニット1</label><input type="number" id="agi1" min="0" placeholder="" /></div><div class="agi-input"><label>ユニット2</label><input type="number" id="agi2" min="0" placeholder="" /></div><div class="agi-input"><label>ユニット3</label><input type="number" id="agi3" min="0" placeholder="" /></div><div class="agi-input"><label>ユニット4</label><input type="number" id="agi4" min="0" placeholder="" /></div><div class="agi-input"><label>ユニット5</label><input type="number" id="agi5" min="0" placeholder="" /></div><div class="agi-input"><label>ユニット6</label><input type="number" id="agi6" min="0" placeholder="" /></div><div class="agi-input"><label>ユニット7</label><input type="number" id="agi7" min="0" placeholder="" /></div><div class="agi-input"><label>ユニット8</label><input type="number" id="agi8" min="0" placeholder="" /></div><div class="agi-input"><label>ユニット9</label><input type="number" id="agi9" min="0" placeholder="" /></div><div class="agi-input"><label>ユニット10</label><input type="number" id="agi10" min="0" placeholder="" /></div>
           </div>
         </section>
         <section id="effects">
-          <h2>Effects Queue</h2>
+          <h2>効果キュー</h2>
           <table id="queueTable">
             <thead>
-              <tr><th>Step</th><th>Type</th><th>Unit</th><th>Value</th><th>Turns</th><th></th></tr>
+              <tr><th>演算</th><th>種類</th><th>ユニット</th><th>値</th><th>ターン数</th><th></th></tr>
             </thead>
             <tbody></tbody>
           </table>
         </section>
-        <button class="btn" type="button" id="simulate">Simulate</button>
+        <button class="btn" type="button" id="simulate">実行</button>
       </aside>
       <section id="log-container" class="card log-panel">
-        <h2>Simulation Log (max 50 computations)</h2>
+        <h2>ログ (最大50演算)</h2>
         <div class="table-wrapper">
           <table id="log-table">
             <thead>
-              <tr><th>Step</th><th>U1</th><th>U2</th><th>U3</th><th>U4</th><th>U5</th><th>U6</th><th>U7</th><th>U8</th><th>U9</th><th>U10</th></tr>
+              <tr><th>演算</th><th>U1</th><th>U2</th><th>U3</th><th>U4</th><th>U5</th><th>U6</th><th>U7</th><th>U8</th><th>U9</th><th>U10</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -55,19 +55,19 @@
     </div>
     <div id="panel" class="panel">
       <button type="button" id="panelClose" class="close">✕</button>
-      <h3>Add Effect</h3>
-      <label>Step: <input type="number" id="panelStep" readonly /></label>
-      <label>Unit: <input type="number" id="panelUnit" /></label>
-      <label>Type:
+      <h3>効果追加</h3>
+      <label>演算: <input type="number" id="panelStep" readonly /></label>
+      <label>ユニット: <input type="number" id="panelUnit" /></label>
+      <label>種類:
         <select id="panelType">
-          <option value="Buff">AGI Buff</option>
-          <option value="Heavy">Heavy Pressure</option>
-          <option value="AV">AV Up/Down</option>
+          <option value="Buff">敏捷バフ</option>
+          <option value="Heavy">重圧 (-30%)</option>
+          <option value="AV">行動値増減</option>
         </select>
       </label>
-      <div id="panelValGroup"><label>Value: <input type="number" id="panelVal" /></label></div>
-      <div id="panelTurnsGroup"><label>Turns: <input type="number" id="panelTurns" /></label></div>
-      <button class="btn" type="button" id="panelAdd">Add Effect</button>
+      <div id="panelValGroup"><label>値: <input type="number" id="panelVal" /></label></div>
+      <div id="panelTurnsGroup"><label>ターン数: <input type="number" id="panelTurns" /></label></div>
+      <button class="btn" type="button" id="panelAdd">効果追加</button>
     </div>
   </div>
   <script src="script.js"></script>
