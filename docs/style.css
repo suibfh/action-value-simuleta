@@ -1,31 +1,9 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 1rem;
-}
-
-h1, h2, h3 {
-  margin: 0.5rem 0;
-}
-
-table {
-  border-collapse: collapse;
-}
-
-table, th, td {
-  border: 1px solid #555;
-}
-
-th, td {
-  padding: 0.2rem 0.4rem;
-  text-align: center;
-  min-width: 50px;
-}
-
-.action {
-  background: #c3f5c3;
-  font-weight: bold;
-}
-
-.effect-block {
-  margin-bottom: 1rem;
-}
+body{font-family:Arial, sans-serif;margin:1rem;}
+h1,h2,h3,summary{margin:0.5rem 0;}
+table{border-collapse:collapse;}
+table,th,td{border:1px solid #555;}
+th,td{padding:0.2rem 0.4rem;text-align:center;min-width:50px;}
+.action{background:#c3f5c3;font-weight:bold;}
+.effect-delete{cursor:pointer;color:red;}
+details{margin-bottom:0.5rem;}
+#queueTable td:last-child{color:red;cursor:pointer;}

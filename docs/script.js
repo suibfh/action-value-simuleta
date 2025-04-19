@@ -1,72 +1,60 @@
-document.getElementById('simulate').addEventListener('click', simulate);
+const queue = [];
 
-function num(id) {
-  const v = parseInt(document.getElementById(id).value, 10);
-  return isNaN(v) ? null : v;
+function n(id){const v=parseInt(document.getElementById(id).value,10);return isNaN(v)?null:v;}
+
+function addRow(obj){
+  const tb=document.querySelector('#queueTable tbody');
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${obj.step}</td><td>${obj.type}</td><td>${obj.unit??'-'}</td><td>${obj.value??'-'}</td><td>${obj.turns??'-'}</td><td>✕</td>`;
+  tr.querySelector('td:last-child').onclick=()=>{tb.removeChild(tr);queue.splice(queue.indexOf(obj),1);};
+  tb.appendChild(tr);
 }
 
-function simulate() {
-  // Preserve current scroll position
-  const startScrollY = window.scrollY;
+document.getElementById('addBuff').onclick=()=>{
+  const o={step:n('bStep'),type:'Buff',unit:n('bUnit'),value:n('bVal'),turns:n('bTurns')};
+  if(o.step&&o.unit&&o.value!==null&&o.turns) {queue.push(o);addRow(o);}
+};
 
-  const baseAgi = [];
-  for (let i = 1; i <= 10; i++) {
-    const v = num('agi' + i);
-    baseAgi.push(v !== null ? v : 0);
-  }
+document.getElementById('addHP').onclick=()=>{
+  const o={step:n('hStep'),type:'Heavy',unit:n('hUnit'),turns:n('hTurns')};
+  if(o.step&&o.unit&&o.turns){queue.push(o);addRow(o);}
+};
 
-  const effects = Array.from({ length: 10 }, () => []);
-  const queue = [];
+document.getElementById('addAV').onclick=()=>{
+  const o={step:n('aStep'),type:'AV',unit:n('aUnit'),value:n('aVal')};
+  if(o.step&&o.unit&&o.value!==null){queue.push(o);addRow(o);}
+};
 
-  const bs = num('buffStep'), bt = num('buffTarget'), bv = num('buffValue'), bT = num('buffTurns');
-  if (bs && bt && bv !== null && bT) queue.push({ step: bs, action: () => effects[bt-1].push({type:'agiBuff', value:bv/100, remaining:bT}) });
+document.getElementById('simulate').addEventListener('click',simulate);
 
-  const hs = num('hpStep'), ht = num('hpTarget'), hT = num('hpTurns');
-  if (hs && ht && hT) queue.push({ step: hs, action: () => effects[ht-1].push({type:'heavyPressure', remaining:hT}) });
-
-  const as = num('avStep'), at = num('avTarget'), avVal = num('avValue');
-  if (as && at && avVal !== null) queue.push({ step: as, action: (avArr)=>{ avArr[at-1]+=avVal;} });
-
-  queue.sort((a,b)=>a.step-b.step);
-
-  const av = new Array(10).fill(0);
-  const tbody = document.querySelector('#log-table tbody');
-  tbody.innerHTML = '';
-
-  const MAX_STEP = 50;
+function simulate(){
+  const startY=window.scrollY;
+  const base=[];for(let i=1;i<=10;i++){const v=n('agi'+i);base.push(v??0);}
+  const eff=Array.from({length:10},()=>[]);
+  const av=new Array(10).fill(0);
+  const tbody=document.querySelector('#log-table tbody');tbody.innerHTML='';
+  const q=[...queue].sort((a,b)=>a.step-b.step);
   let qi=0;
-  for(let step=1; step<=MAX_STEP; step++){
-    while(qi<queue.length && queue[qi].step===step){
-      queue[qi].action(av);
+  const max=50;
+  for(let step=1;step<=max;step++){
+    while(qi<q.length && q[qi].step===step){
+      const e=q[qi];
+      if(e.type==='Buff'){eff[e.unit-1].push({type:'Buff',value:e.value/100,rem:e.turns});}
+      else if(e.type==='Heavy'){eff[e.unit-1].push({type:'Heavy',rem:e.turns});}
+      else if(e.type==='AV'){av[e.unit-1]+=e.value;}
       qi++;
     }
-
     for(let i=0;i<10;i++){
-      let ag = baseAgi[i];
-      effects[i].forEach(e=>{ if(e.remaining>0 && e.type==='heavyPressure'){ ag -= Math.floor(ag*0.3);} });
-      effects[i].forEach(e=>{ if(e.remaining>0 && e.type==='agiBuff'){ ag = Math.floor(ag*(1+e.value));} });
+      let ag=base[i];
+      eff[i].forEach(x=>{if(x.rem>0 && x.type==='Heavy'){ag-=Math.floor(ag*0.3);} });
+      eff[i].forEach(x=>{if(x.rem>0 && x.type==='Buff'){ag=Math.floor(ag*(1+x.value));} });
       av[i]+=ag+100;
     }
-
     const tr=document.createElement('tr');
-    const tdStep=document.createElement('td');tdStep.textContent=step;tr.appendChild(tdStep);
-    const actors=[];
-    for(let i=0;i<10;i++){ if(av[i]>=1000)actors.push({idx:i,av:av[i]});}
-    actors.sort((a,b)=>b.av-a.av);
-    for(let i=0;i<10;i++){
-      const td=document.createElement('td');
-      td.textContent=av[i];
-      if(av[i]>=1000)td.classList.add('action');
-      tr.appendChild(td);
-    }
+    tr.innerHTML='<td>'+step+'</td>'+av.map(v=>'<td'+(v>=1000?' class="action"':'')+'>'+v+'</td>').join('');
     tbody.appendChild(tr);
-
-    actors.forEach(a=>{
-      av[a.idx]=0;
-      effects[a.idx].forEach(e=>{ if(e.remaining>0) e.remaining-=1;});
-    });
+    const actors=[];for(let i=0;i<10;i++){if(av[i]>=1000)actors.push(i);}
+    actors.forEach(idx=>{av[idx]=0;eff[idx].forEach(e=>{if(e.rem>0)e.rem-=1;});});
   }
-
-  // Return to original scroll position
-  window.scrollTo({top: startScrollY, behavior: 'auto'});
+  window.scrollTo({top:startY,behavior:'auto'});
 }

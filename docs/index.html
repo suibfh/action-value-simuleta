@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>BFH Action Order Simulator v006</title>
+  <title>BFH Action Order Simulator v008</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -31,37 +31,41 @@
   </section>
 
   <section id="effects">
-    <h2>Add an Effect (prototype: one each)</h2>
-    <div class="effect-block">
-      <h3>AGI Buff (+%)</h3>
-      Step #
-      <input type="number" id="buffStep" min="1" />
-      Target Unit #
-      <input type="number" id="buffTarget" min="1" max="10" />
-      Value %
-      <input type="number" id="buffValue" />
-      Turns
-      <input type="number" id="buffTurns" min="1" />
-    </div>
-    <div class="effect-block">
-      <h3>Heavy Pressure (-30% AGI)</h3>
-      Step #
-      <input type="number" id="hpStep" min="1" />
-      Target Unit #
-      <input type="number" id="hpTarget" min="1" max="10" />
-      Turns
-      <input type="number" id="hpTurns" min="1" />
-    </div>
-    <div class="effect-block">
-      <h3>AV Up / Down (±)</h3>
-      Step #
-      <input type="number" id="avStep" min="1" />
-      Target Unit #
-      <input type="number" id="avTarget" min="1" max="10" />
-      Value
-      <input type="number" id="avValue" />
-      (positive = up, negative = down)
-    </div>
+    <h2>Effects Queue</h2>
+
+    <details open>
+      <summary>AGI Buff (+%)</summary>
+      Step <input type="number" id="bStep" min="1" />
+      Unit <input type="number" id="bUnit" min="1" max="10" />
+      Value % <input type="number" id="bVal" />
+      Turns <input type="number" id="bTurns" min="1" />
+      <button id="addBuff">Add</button>
+    </details>
+
+    <details>
+      <summary>Heavy Pressure (-30%)</summary>
+      Step <input type="number" id="hStep" min="1" />
+      Unit <input type="number" id="hUnit" min="1" max="10" />
+      Turns <input type="number" id="hTurns" min="1" />
+      <button id="addHP">Add</button>
+    </details>
+
+    <details>
+      <summary>AV Up / Down (±)</summary>
+      Step <input type="number" id="aStep" min="1" />
+      Unit <input type="number" id="aUnit" min="1" max="10" />
+      Value <input type="number" id="aVal" />
+      <button id="addAV">Add</button>
+    </details>
+
+    <h3>Queued Effects</h3>
+    <table id="queueTable">
+      <thead>
+        <tr><th>Step</th><th>Type</th><th>Unit</th><th>Value</th><th>Turns</th><th></th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
     <button id="simulate">Simulate</button>
   </section>
 
