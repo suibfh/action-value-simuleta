@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>BFH Action Order Simulator v009a</title>
+  <title>BFH Action Order Simulator v009b</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -41,11 +41,25 @@
     <button type="button" id="simulate">Simulate</button>
   </section>
 
+  <section id="log-container">
+    <h2>Simulation Log (max 50 computations)</h2>
+    <table id="log-table">
+      <thead>
+        <tr>
+          <th>Step</th>
+          <th>U1</th><th>U2</th><th>U3</th><th>U4</th><th>U5</th>
+          <th>U6</th><th>U7</th><th>U8</th><th>U9</th><th>U10</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
   <div id="panel" class="panel">
     <button type="button" id="panelClose" class="close">✕</button>
     <h3>追加効果設定</h3>
     <label>Step: <input type="number" id="panelStep" readonly></label><br>
-    <label>Unit: <input type="number" id="panelUnit"></label><br>
+    <label>Unit: <input type="number" id="panelUnit"></input></label><br>
     <label>Type:
       <select id="panelType">
         <option value="Buff">AGI Buff</option>
