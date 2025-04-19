@@ -13,7 +13,7 @@ function simulate() {
     baseAgi.push(val !== null ? val : 0);
   }
 
-  // Gather effects
+  // Gather effects (array per unit)
   const effects = Array.from({ length: 10 }, () => []);
 
   // AGI Buff
@@ -34,12 +34,11 @@ function simulate() {
   if (hpTarget && hpTurns) {
     effects[hpTarget - 1].push({
       type: 'heavyPressure',
-      value: -0.3,
       remaining: hpTurns
     });
   }
 
-  // AV Up/Down (one‑shot)
+  // AV Up/Down (one‑shot, still first computation only for prototype)
   const avTarget = getInputNumber('avTarget');
   const avValue = getInputNumber('avValue');
   let avUpDownApplied = false;
@@ -62,21 +61,24 @@ function simulate() {
     // Increment AV with modified AGI
     for (let i = 0; i < 10; i++) {
       let agiMod = baseAgi[i];
-      // Apply effects sequentially: debuffs then buffs
+
+      // 1) Apply heavy pressure debuff first (can be multiple in future)
       effects[i].forEach(eff => {
-        if (eff.remaining > 0) {
-          if (eff.type === 'heavyPressure') {
-            agiMod = Math.floor(agiMod * (1 + eff.value));
-          }
+        if (eff.remaining > 0 && eff.type === 'heavyPressure') {
+          // Reduce by floor(AGI * 0.3) per spec → agi - floor(agi*0.3)
+          const reduction = Math.floor(agiMod * 0.3);
+          agiMod = agiMod - reduction;
         }
       });
+
+      // 2) Apply AGI Buffs sequentially
       effects[i].forEach(eff => {
-        if (eff.remaining > 0) {
-          if (eff.type === 'agiBuff') {
-            agiMod = Math.floor(agiMod * (1 + eff.value));
-          }
+        if (eff.remaining > 0 && eff.type === 'agiBuff') {
+          // Increase, then floor
+          agiMod = Math.floor(agiMod * (1 + eff.value));
         }
       });
+
       av[i] += agiMod + 100;
     }
 
@@ -86,7 +88,7 @@ function simulate() {
     stCell.textContent = step;
     row.appendChild(stCell);
 
-    // Determine actors
+    // Identify actors (those reaching AV >=1000)
     const actors = [];
     for (let i = 0; i < 10; i++) {
       if (av[i] >= 1000) {
@@ -99,6 +101,9 @@ function simulate() {
     for (let i = 0; i < 10; i++) {
       const cell = document.createElement('td');
       cell.textContent = av[i];
+      if (av[i] >= 1000) {
+        cell.classList.add('action');
+      }
       row.appendChild(cell);
     }
 
