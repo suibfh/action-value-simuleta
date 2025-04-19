@@ -77,7 +77,6 @@ function simulate(){
     actors.sort((a,b)=>b.av-a.av);
     tr.innerHTML='<td>'+step+'</td>'+av.map((v,i)=>'<td class="'+(v>=1000?'action':'')+'">'+v+'</td>').join('');
     tbody.appendChild(tr);
-    // attach click listeners for new action cells
     tbody.querySelectorAll('td.action').forEach(cell=>{
       cell.onclick=()=>{
         const st = +cell.parentNode.firstChild.textContent;
