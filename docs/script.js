@@ -89,10 +89,20 @@ function simulate(){
       qi++;
     }
     for(let i=0;i<10;i++){
-      let ag=base[i];
-      eff[i].forEach(x=>{if(x.rem>0 && x.type==='Heavy'){ag-=Math.floor(ag*0.3);} });
-      eff[i].forEach(x=>{if(x.rem>0 && x.type==='Buff'){ag=Math.floor(ag*(1+x.value));} });
-      av[i]+=ag+100;
+      const baseAgi = base[i];
+      let delta = 0;
+      // calculate independent effect deltas
+      eff[i].forEach(x=>{
+        if(x.rem>0){
+          if(x.type==='Heavy'){
+            delta -= Math.floor(baseAgi * 0.3);
+          } else if(x.type==='Buff'){
+            delta += Math.floor(baseAgi * x.value);
+          }
+        }
+      });
+      const agMod = baseAgi + delta;
+      av[i] += agMod + 100;
     }
     const tr=document.createElement('tr');
     const cellStep=document.createElement('td'); cellStep.textContent=step; tr.appendChild(cellStep);
