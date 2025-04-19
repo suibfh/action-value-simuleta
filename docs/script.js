@@ -83,21 +83,32 @@ function simulate(){
     const flags = Array.from({length:10},()=>[]);
     while(qi<q.length && q[qi].step===step){
       const e=q[qi];
-      if(e.type==='Buff'){ eff[e.unit-1].push({type:'Buff',value:e.value/100,rem:e.turns}); flags[e.unit-1].push('B'); }
-      else if(e.type==='Heavy'){ eff[e.unit-1].push({type:'Heavy',rem:e.turns}); flags[e.unit-1].push('H'); }
-      else if(e.type==='AV'){ av[e.unit-1]+=e.value; flags[e.unit-1].push('A'); }
+      if(e.type==='Buff'){
+        // skip first computation for self-buff
+        eff[e.unit-1].push({type:'Buff',value:e.value/100,rem:e.turns,skipFirst:true});
+        flags[e.unit-1].push('B');
+      } else if(e.type==='Heavy'){
+        eff[e.unit-1].push({type:'Heavy',rem:e.turns});
+        flags[e.unit-1].push('H');
+      } else if(e.type==='AV'){
+        av[e.unit-1]+=e.value;
+        flags[e.unit-1].push('A');
+      }
       qi++;
     }
     for(let i=0;i<10;i++){
       const baseAgi = base[i];
       let delta = 0;
-      // calculate independent effect deltas
       eff[i].forEach(x=>{
         if(x.rem>0){
           if(x.type==='Heavy'){
             delta -= Math.floor(baseAgi * 0.3);
           } else if(x.type==='Buff'){
-            delta += Math.floor(baseAgi * x.value);
+            if(x.skipFirst){
+              x.skipFirst = false; // skip first buff compute
+            } else {
+              delta += Math.floor(baseAgi * x.value);
+            }
           }
         }
       });
