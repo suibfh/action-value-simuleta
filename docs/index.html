@@ -2,68 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title data-i18n="title">BFH Action Order Simulator</title>
+  <title>BFH Action Order Simulator v011</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
     <header class="card">
-      <h1 data-i18n="header.title">BFH Action Order Simulator</h1>
+      <h1>BFH Action Order Simulator</h1>
     </header>
     <div class="main">
       <aside class="card input-panel">
+        <section id="tests">
+          <h2>Test Scenarios</h2>
+          <select id="scenarioSelect">
+            <option value="">-- Select Scenario --</option>
+            <option value="scenario1">Self Buff 2-turn</option>
+            <option value="scenario2">Same-step Heavy before Buff</option>
+            <option value="scenario3">Same-step Heavy after Buff</option>
+            <option value="scenario4">Cross-step Buff</option>
+          </select>
+          <button class="btn" type="button" id="loadScenario">Load Scenario</button>
+        </section>
         <section id="inputs">
-          <h2 data-i18n="header.initialAgi">Initial AGI Values</h2>
+          <h2>Initial AGI Values</h2>
           <div class="agi-grid">
-            <div class="agi-input"><label data-i18n="label.unit">U1</label><input type="number" id="agi1" min="0" placeholder="" /></div>
-<div class="agi-input"><label data-i18n="label.unit">U2</label><input type="number" id="agi2" min="0" placeholder="" /></div>
-<div class="agi-input"><label data-i18n="label.unit">U3</label><input type="number" id="agi3" min="0" placeholder="" /></div>
-<div class="agi-input"><label data-i18n="label.unit">U4</label><input type="number" id="agi4" min="0" placeholder="" /></div>
-<div class="agi-input"><label data-i18n="label.unit">U5</label><input type="number" id="agi5" min="0" placeholder="" /></div>
-<div class="agi-input"><label data-i18n="label.unit">U6</label><input type="number" id="agi6" min="0" placeholder="" /></div>
-<div class="agi-input"><label data-i18n="label.unit">U7</label><input type="number" id="agi7" min="0" placeholder="" /></div>
-<div class="agi-input"><label data-i18n="label.unit">U8</label><input type="number" id="agi8" min="0" placeholder="" /></div>
-<div class="agi-input"><label data-i18n="label.unit">U9</label><input type="number" id="agi9" min="0" placeholder="" /></div>
-<div class="agi-input"><label data-i18n="label.unit">U10</label><input type="number" id="agi10" min="0" placeholder="" /></div>
+            <div class="agi-input"><label>U1</label><input type="number" id="agi1" min="0" placeholder="" /></div><div class="agi-input"><label>U2</label><input type="number" id="agi2" min="0" placeholder="" /></div><div class="agi-input"><label>U3</label><input type="number" id="agi3" min="0" placeholder="" /></div><div class="agi-input"><label>U4</label><input type="number" id="agi4" min="0" placeholder="" /></div><div class="agi-input"><label>U5</label><input type="number" id="agi5" min="0" placeholder="" /></div><div class="agi-input"><label>U6</label><input type="number" id="agi6" min="0" placeholder="" /></div><div class="agi-input"><label>U7</label><input type="number" id="agi7" min="0" placeholder="" /></div><div class="agi-input"><label>U8</label><input type="number" id="agi8" min="0" placeholder="" /></div><div class="agi-input"><label>U9</label><input type="number" id="agi9" min="0" placeholder="" /></div><div class="agi-input"><label>U10</label><input type="number" id="agi10" min="0" placeholder="" /></div>
           </div>
         </section>
         <section id="effects">
-          <h2 data-i18n="header.effects">Effects Queue</h2>
+          <h2>Effects Queue</h2>
           <table id="queueTable">
             <thead>
-              <tr>
-                <th data-i18n="table.step">Step</th>
-                <th data-i18n="table.type">Type</th>
-                <th data-i18n="table.unit">Unit</th>
-                <th data-i18n="table.value">Value</th>
-                <th data-i18n="table.turns">Turns</th>
-                <th></th>
-              </tr>
+              <tr><th>Step</th><th>Type</th><th>Unit</th><th>Value</th><th>Turns</th><th></th></tr>
             </thead>
             <tbody></tbody>
           </table>
-          <button class="btn" type="button" id="simulate" data-i18n="button.simulate">Simulate</button>
         </section>
+        <button class="btn" type="button" id="simulate">Simulate</button>
       </aside>
       <section id="log-container" class="card log-panel">
-        <h2 data-i18n="header.log">Simulation Log (max 50 computations)</h2>
+        <h2>Simulation Log (max 50 computations)</h2>
         <div class="table-wrapper">
           <table id="log-table">
             <thead>
-              <tr>
-                <th data-i18n="table.step">Step</th>
-                <th data-i18n="header.unit1">U1</th>
-<th data-i18n="header.unit2">U2</th>
-<th data-i18n="header.unit3">U3</th>
-<th data-i18n="header.unit4">U4</th>
-<th data-i18n="header.unit5">U5</th>
-<th data-i18n="header.unit6">U6</th>
-<th data-i18n="header.unit7">U7</th>
-<th data-i18n="header.unit8">U8</th>
-<th data-i18n="header.unit9">U9</th>
-<th data-i18n="header.unit10">U10</th>
-              </tr>
+              <tr><th>Step</th><th>U1</th><th>U2</th><th>U3</th><th>U4</th><th>U5</th><th>U6</th><th>U7</th><th>U8</th><th>U9</th><th>U10</th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -72,23 +55,19 @@
     </div>
     <div id="panel" class="panel">
       <button type="button" id="panelClose" class="close">✕</button>
-      <h3 data-i18n="panel.title">Add Effect</h3>
-      <label data-i18n="panel.step">Step: <input type="number" id="panelStep" readonly /></label>
-      <label data-i18n="panel.unit">Unit: <input type="number" id="panelUnit" /></label>
-      <label data-i18n="panel.type">Type:
+      <h3>Add Effect</h3>
+      <label>Step: <input type="number" id="panelStep" readonly /></label>
+      <label>Unit: <input type="number" id="panelUnit" /></label>
+      <label>Type:
         <select id="panelType">
-          <option value="Buff" data-i18n="panel.opt.buff">AGI Buff</option>
-          <option value="Heavy" data-i18n="panel.opt.heavy">Heavy Pressure</option>
-          <option value="AV" data-i18n="panel.opt.av">AV Up/Down</option>
+          <option value="Buff">AGI Buff</option>
+          <option value="Heavy">Heavy Pressure</option>
+          <option value="AV">AV Up/Down</option>
         </select>
       </label>
-      <div id="panelValGroup">
-        <label data-i18n="panel.value">Value: <input type="number" id="panelVal" /></label>
-      </div>
-      <div id="panelTurnsGroup">
-        <label data-i18n="panel.turns">Turns: <input type="number" id="panelTurns" /></label>
-      </div>
-      <button class="btn" type="button" id="panelAdd" data-i18n="button.addEffect">Add Effect</button>
+      <div id="panelValGroup"><label>Value: <input type="number" id="panelVal" /></label></div>
+      <div id="panelTurnsGroup"><label>Turns: <input type="number" id="panelTurns" /></label></div>
+      <button class="btn" type="button" id="panelAdd">Add Effect</button>
     </div>
   </div>
   <script src="script.js"></script>
