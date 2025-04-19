@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>BFH Action Order Simulator v004</title>
+  <title>BFH Action Order Simulator v006</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -31,9 +31,11 @@
   </section>
 
   <section id="effects">
-    <h2>Optional Effects (single entry each for prototype)</h2>
+    <h2>Add an Effect (prototype: one each)</h2>
     <div class="effect-block">
       <h3>AGI Buff (+%)</h3>
+      Step #
+      <input type="number" id="buffStep" min="1" />
       Target Unit #
       <input type="number" id="buffTarget" min="1" max="10" />
       Value %
@@ -43,6 +45,8 @@
     </div>
     <div class="effect-block">
       <h3>Heavy Pressure (-30% AGI)</h3>
+      Step #
+      <input type="number" id="hpStep" min="1" />
       Target Unit #
       <input type="number" id="hpTarget" min="1" max="10" />
       Turns
@@ -50,6 +54,8 @@
     </div>
     <div class="effect-block">
       <h3>AV Up / Down (±)</h3>
+      Step #
+      <input type="number" id="avStep" min="1" />
       Target Unit #
       <input type="number" id="avTarget" min="1" max="10" />
       Value
