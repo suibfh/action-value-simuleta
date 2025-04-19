@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>BFH Action Order Simulator v008a</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>BFH Action Order Simulator v009</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <h1>BFH Action Order Simulator</h1>
@@ -13,18 +13,18 @@
     <table>
       <tbody>
         <tr>
-          <td>U1 <input type="number" id="agi1" min="0" placeholder="AGI" /></td>
-          <td>U2 <input type="number" id="agi2" min="0" placeholder="AGI" /></td>
-          <td>U3 <input type="number" id="agi3" min="0" placeholder="AGI" /></td>
-          <td>U4 <input type="number" id="agi4" min="0" placeholder="AGI" /></td>
-          <td>U5 <input type="number" id="agi5" min="0" placeholder="AGI" /></td>
+          <td>U1 <input type="number" id="agi1" min="0" placeholder="AGI"></td>
+          <td>U2 <input type="number" id="agi2" min="0" placeholder="AGI"></td>
+          <td>U3 <input type="number" id="agi3" min="0" placeholder="AGI"></td>
+          <td>U4 <input type="number" id="agi4" min="0" placeholder="AGI"></td>
+          <td>U5 <input type="number" id="agi5" min="0" placeholder="AGI"></td>
         </tr>
         <tr>
-          <td>U6 <input type="number" id="agi6" min="0" placeholder="AGI" /></td>
-          <td>U7 <input type="number" id="agi7" min="0" placeholder="AGI" /></td>
-          <td>U8 <input type="number" id="agi8" min="0" placeholder="AGI" /></td>
-          <td>U9 <input type="number" id="agi9" min="0" placeholder="AGI" /></td>
-          <td>U10 <input type="number" id="agi10" min="0" placeholder="AGI" /></td>
+          <td>U6 <input type="number" id="agi6" min="0" placeholder="AGI"></td>
+          <td>U7 <input type="number" id="agi7" min="0" placeholder="AGI"></td>
+          <td>U8 <input type="number" id="agi8" min="0" placeholder="AGI"></td>
+          <td>U9 <input type="number" id="agi9" min="0" placeholder="AGI"></td>
+          <td>U10 <input type="number" id="agi10" min="0" placeholder="AGI"></td>
         </tr>
       </tbody>
     </table>
@@ -32,40 +32,12 @@
 
   <section id="effects">
     <h2>Effects Queue</h2>
-
-    <details open>
-      <summary>AGI Buff (+%)</summary>
-      Step <input type="number" id="bStep" min="1" />
-      Unit <input type="number" id="bUnit" min="1" max="10" />
-      Value % <input type="number" id="bVal" />
-      Turns <input type="number" id="bTurns" min="1" />
-      <button type="button" id="addBuff">Add</button>
-    </details>
-
-    <details>
-      <summary>Heavy Pressure (-30%)</summary>
-      Step <input type="number" id="hStep" min="1" />
-      Unit <input type="number" id="hUnit" min="1" max="10" />
-      Turns <input type="number" id="hTurns" min="1" />
-      <button type="button" id="addHP">Add</button>
-    </details>
-
-    <details>
-      <summary>AV Up / Down (±)</summary>
-      Step <input type="number" id="aStep" min="1" />
-      Unit <input type="number" id="aUnit" min="1" max="10" />
-      Value <input type="number" id="aVal" />
-      <button type="button" id="addAV">Add</button>
-    </details>
-
-    <h3>Queued Effects</h3>
     <table id="queueTable">
       <thead>
         <tr><th>Step</th><th>Type</th><th>Unit</th><th>Value</th><th>Turns</th><th></th></tr>
       </thead>
       <tbody></tbody>
     </table>
-
     <button type="button" id="simulate">Simulate</button>
   </section>
 
@@ -82,6 +54,27 @@
       <tbody></tbody>
     </table>
   </section>
+
+  <div id="panel" class="panel">
+    <button type="button" id="panelClose" class="close">✕</button>
+    <h3>追加効果設定</h3>
+    <label>Step: <input type="number" id="panelStep" readonly></label><br>
+    <label>Unit: <input type="number" id="panelUnit" readonly></label><br>
+    <label>Type:
+      <select id="panelType">
+        <option value="Buff">AGI Buff</option>
+        <option value="Heavy">Heavy Pressure</option>
+        <option value="AV">AV Up/Down</option>
+      </select>
+    </label><br>
+    <div id="panelValGroup">
+      <label>Value: <input type="number" id="panelVal"></label><br>
+    </div>
+    <div id="panelTurnsGroup">
+      <label>Turns: <input type="number" id="panelTurns"></label><br>
+    </div>
+    <button type="button" id="panelAdd">Add Effect</button>
+  </div>
 
   <script src="script.js"></script>
 </body>

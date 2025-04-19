@@ -1,4 +1,4 @@
-const queue = [];
+const queue=[];
 
 function n(id){const v=parseInt(document.getElementById(id).value,10);return isNaN(v)?null:v;}
 
@@ -10,55 +10,82 @@ function addRow(obj){
   tb.appendChild(tr);
 }
 
-document.getElementById('addBuff').addEventListener('click', ()=>{
-  const o={step:n('bStep'),type:'Buff',unit:n('bUnit'),value:n('bVal'),turns:n('bTurns')};
-  if(o.step>0 && o.unit>0 && o.value!==null && o.turns>0){queue.push(o);addRow(o);}
-});
-document.getElementById('addHP').addEventListener('click', ()=>{
-  const o={step:n('hStep'),type:'Heavy',unit:n('hUnit'),turns:n('hTurns')};
-  if(o.step>0 && o.unit>0 && o.turns>0){queue.push(o);addRow(o);}
-});
-document.getElementById('addAV').addEventListener('click', ()=>{
-  const o={step:n('aStep'),type:'AV',unit:n('aUnit'),value:n('aVal')};
-  if(o.step>0 && o.unit>0 && o.value!==null){queue.push(o);addRow(o);}
+function openPanel(step, unit){
+  document.getElementById('panelStep').value=step;
+  document.getElementById('panelUnit').value=unit;
+  document.getElementById('panelType').value='Buff';
+  togglePanelFields();
+  document.getElementById('panel').classList.add('open');
+}
+
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+}
+
+function togglePanelFields(){
+  const type = document.getElementById('panelType').value;
+  document.getElementById('panelValGroup').style.display = (type==='Heavy'?'none':'block');
+  document.getElementById('panelTurnsGroup').style.display = (type==='AV'?'none':'block');
+}
+
+document.getElementById('panelClose').addEventListener('click', closePanel);
+document.getElementById('panelType').addEventListener('change', togglePanelFields);
+
+document.getElementById('panelAdd').addEventListener('click', ()=>{
+  const step=n('panelStep'), unit=n('panelUnit');
+  const type=document.getElementById('panelType').value;
+  const value = n('panelVal');
+  const turns = n('panelTurns');
+  const obj = {step, type, unit, value, turns};
+  queue.push(obj);
+  addRow(obj);
+  closePanel();
 });
 
-document.getElementById('simulate').addEventListener('click', () => {
-  try {
-    simulate();
-  } catch (e) {
-    console.error('Simulation error:', e);
-    alert('Error during simulation: ' + e.message);
-  }
-});
+document.getElementById('simulate').addEventListener('click', simulate);
 
 function simulate(){
-  const startY = window.scrollY;
-  const base=[];for(let i=1;i<=10;i++){base.push(n('agi'+i)||0);}
+  const startY=window.scrollY;
+  const base=[];
+  for(let i=1;i<=10;i++){base.push(n('agi'+i)||0);}
   const eff=Array.from({length:10},()=>[]);
   const av=new Array(10).fill(0);
   const tbody=document.querySelector('#log-table tbody');tbody.innerHTML='';
   const q=[...queue].sort((a,b)=>a.step-b.step);
-  let qi=0;const max=50;
-  for(let step=1;step<=max;step++){
+  let qi=0;
+  for(let step=1; step<=50; step++){
     while(qi<q.length && q[qi].step===step){
       const e=q[qi];
-      if(e.type==='Buff'){eff[e.unit-1].push({type:'Buff',value:e.value/100,rem:e.turns});}
-      else if(e.type==='Heavy'){eff[e.unit-1].push({type:'Heavy',rem:e.turns});}
-      else if(e.type==='AV'){av[e.unit-1]+=e.value;}
+      if(e.type==='Buff' && e.unit && e.value!=null && e.turns){
+        eff[e.unit-1].push({type:'Buff', value:e.value/100, rem:e.turns});
+      } else if(e.type==='Heavy' && e.unit && e.turns){
+        eff[e.unit-1].push({type:'Heavy', rem:e.turns});
+      } else if(e.type==='AV' && e.unit && e.value!=null){
+        av[e.unit-1]+=e.value;
+      }
       qi++;
     }
     for(let i=0;i<10;i++){
       let ag=base[i];
-      eff[i].forEach(x=>{if(x.rem>0&&x.type==='Heavy'){ag-=Math.floor(ag*0.3);}});
-      eff[i].forEach(x=>{if(x.rem>0&&x.type==='Buff'){ag=Math.floor(ag*(1+x.value));}});
+      eff[i].forEach(x=>{if(x.rem>0 && x.type==='Heavy'){ag-=Math.floor(ag*0.3);}});
+      eff[i].forEach(x=>{if(x.rem>0 && x.type==='Buff'){ag=Math.floor(ag*(1+x.value));}});
       av[i]+=ag+100;
     }
     const tr=document.createElement('tr');
-    tr.innerHTML='<td>'+step+'</td>'+av.map(v=>'<td'+(v>=1000?' class="action"':'')+'>'+v+'</td>').join('');
+    const actors=[];
+    for(let i=0;i<10;i++){if(av[i]>=1000)actors.push({idx:i,av:av[i]});}
+    actors.sort((a,b)=>b.av-a.av);
+    tr.innerHTML='<td>'+step+'</td>'+av.map((v,i)=>'<td class="'+(v>=1000?'action':'')+'">'+v+'</td>').join('');
     tbody.appendChild(tr);
-    const actors=[];for(let i=0;i<10;i++){if(av[i]>=1000)actors.push(i);}
-    actors.forEach(idx=>{av[idx]=0;eff[idx].forEach(e=>{if(e.rem>0)e.rem--;});});
+    // attach click listeners for new action cells
+    tbody.querySelectorAll('td.action').forEach(cell=>{
+      cell.onclick=()=>{
+        const st = +cell.parentNode.firstChild.textContent;
+        const idx = Array.from(cell.parentNode.children).indexOf(cell);
+        openPanel(st, idx);
+      };
+    });
+    actors.forEach(a=>{av[a.idx]=0;eff[a.idx].forEach(e=>{if(e.rem>0)e.rem--;});});
   }
   window.scrollTo({top:startY,behavior:'auto'});
 }
