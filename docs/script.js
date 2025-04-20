@@ -54,7 +54,12 @@ document.getElementById('simulate').addEventListener('click', simulate);
 
 function simulate() {
   const startY = window.scrollY;
-  const base = Array(10).fill(100);
+  // Read base AGI values from inputs
+  const base = [];
+  for (let i = 1; i <= 10; i++) {
+    const v = n('agi' + i);
+    base.push(v !== null ? v : 0);
+  }
   const eff = Array.from({ length: 10 }, () => []);
   const av = new Array(10).fill(0);
   const tbody = document.querySelector('#log-table tbody');
