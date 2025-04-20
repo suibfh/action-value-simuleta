@@ -54,20 +54,22 @@
       </section>
     </div>
     <div id="panel" class="panel">
-      <button type="button" id="panelClose" class="close">✕</button>
-      <h3>Add Effect</h3>
-      <label>Step: <input type="number" id="panelStep" readonly /></label>
-      <label>Giver: <input type="number" id="panelGiver" readonly /></label><br>
-      <label>Receiver: <input type="number" id="panelReceiver" min="1" max="10" /></label>
-      <label>Receiver: <input type="number" id="panelReceiver" /></label /></label>
-      <label>Type:
-        <select id="panelType">
-          <option value="Buff">AGI Buff</option>
-          <option value="Heavy">Heavy Pressure</option>
-          <option value="AV">AV Up/Down</option>
-        </select>
-      </label>
-      <div id="panelValGroup"><label>Value: <input type="number" id="panelVal" /></label></div>
+  <button type="button" id="panelClose" class="close">✕</button>
+  <h3>Add Effect</h3>
+  <label>Step: <input type="number" id="panelStep" readonly /></label><br>
+  <label>Giver: <input type="number" id="panelGiver" readonly /></label><br>
+  <label>Receiver: <input type="number" id="panelReceiver" min="1" max="10" /></label><br>
+  <label>Type:
+    <select id="panelType">
+      <option value="Buff">AGI Buff</option>
+      <option value="Heavy">Heavy Pressure</option>
+      <option value="AV">AV Up/Down</option>
+    </select>
+  </label><br>
+  <div id="panelValGroup"><label>Value: <input type="number" id="panelVal" /></label></div>
+  <div id="panelTurnsGroup"><label>Turns: <input type="number" id="panelTurns" /></label></div>
+  <button class="btn" type="button" id="panelAdd">Add Effect</button>
+</div>
       <div id="panelTurnsGroup"><label>Turns: <input type="number" id="panelTurns" /></label></div>
       <button class="btn" type="button" id="panelAdd">Add Effect</button>
     </div>
