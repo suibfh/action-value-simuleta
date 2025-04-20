@@ -80,6 +80,7 @@ function simulate() {
   for (let step = 1; step <= 50; step++) {
     const flags = Array.from({ length: 10 }, () => []);
 
+    // enqueue effects
     while (qi < q.length && q[qi].step === step) {
       const x = Object.assign({}, q[qi]);
       x.remaining = x.turns;
@@ -90,6 +91,7 @@ function simulate() {
       qi++;
     }
 
+    // compute AV increments
     for (let i = 0; i < 10; i++) {
       let delta = 0;
       effArr[i].forEach(x => {
@@ -106,6 +108,7 @@ function simulate() {
       av[i] += base[i] + delta + 100;
     }
 
+    // render row
     const tr = document.createElement('tr');
     const tdStep = document.createElement('td');
     tdStep.textContent = step;
@@ -124,6 +127,7 @@ function simulate() {
     }
     tbody.appendChild(tr);
 
+    // resolve actions and effect activation
     const actors = [];
     for (let i = 0; i < 10; i++) {
       if (av[i] >= 1000) actors.push({ idx: i, av: av[i] });
@@ -131,27 +135,30 @@ function simulate() {
     actors.sort((a, b) => b.av - a.av || a.idx - b.idx);
 
     actors.forEach(a => {
+      // reset AV
       av[a.idx] = 0;
-      effArr[a.idx].forEach(x => {
-        const same = x.step === a.step; // maintain original logic
-        const isGiver = x.giver - 1 === a.idx;
-        const isReceiver = x.receiver - 1 === a.idx;
 
+      effArr[a.idx].forEach(x => {
+        const same = x.step === step;
+        const isSelf = x.giver === x.receiver && x.receiver === a.idx + 1;
+        const isOtherEarly = x.giver <= x.receiver && x.receiver === a.idx + 1;
+
+        // activation logic
         if (!x.active) {
-          if (same) {
-            if (!isGiver && isReceiver && x.giver <= x.receiver) {
-              x.active = true;
-            }
-          } else if (x.step < step && isReceiver) {
+          if (isSelf) {
+            // self: activate on second action
+            if (x.appliedActions > 0) x.active = true;
+            x.appliedActions++;
+          } else if (same && isOtherEarly) {
+            x.active = true;
+          } else if (!same && x.step < step && x.receiver === a.idx + 1) {
             x.active = true;
           }
         }
 
+        // decrement remaining on action
         if (x.active) {
-          x.appliedActions++;
-          if (x.appliedActions <= x.turns) {
-            x.remaining--;
-          }
+          x.remaining--;
           if (x.remaining <= 0) {
             x.active = false;
           }
@@ -159,12 +166,10 @@ function simulate() {
       });
     });
 
+    // attach click
     tr.querySelectorAll('td.action').forEach(cell => {
       const idx = Array.from(cell.parentNode.children).indexOf(cell) - 1;
-      cell.onclick = () => {
-        const st = +cell.parentNode.firstChild.textContent;
-        openPanel(st, idx + 1); // revert to original unit numbering
-      };
+      cell.onclick = () => openPanel(step, idx + 1);
     });
   }
 
