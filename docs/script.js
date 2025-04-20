@@ -44,19 +44,9 @@ document.getElementById('panelAdd').addEventListener('click', () => {
   const type = document.getElementById('panelType').value;
   const value = n('panelVal'),
         turns = n('panelTurns');
-  const effObj = {
-    step,
-    type,
-    giver,
-    receiver,
-    value,
-    turns,
-    remaining: turns,
-    appliedActions: 0,
-    active: false
-  };
-  queue.push(effObj);
-  addRow(effObj);
+  const o = { step, type, giver, receiver, value, turns };
+  queue.push(o);
+  addRow(o);
   closePanel();
 });
 
@@ -64,12 +54,13 @@ document.getElementById('simulate').addEventListener('click', simulate);
 
 function simulate() {
   const startY = window.scrollY;
+  // Read base AGI values from inputs
   const base = [];
   for (let i = 1; i <= 10; i++) {
     const v = n('agi' + i);
     base.push(v !== null ? v : 0);
   }
-  const effArr = Array.from({ length: 10 }, () => []);
+  const eff = Array.from({ length: 10 }, () => []);
   const av = new Array(10).fill(0);
   const tbody = document.querySelector('#log-table tbody');
   tbody.innerHTML = '';
@@ -79,36 +70,42 @@ function simulate() {
 
   for (let step = 1; step <= 50; step++) {
     const flags = Array.from({ length: 10 }, () => []);
-
-    // enqueue effects
     while (qi < q.length && q[qi].step === step) {
-      const x = Object.assign({}, q[qi]);
-      x.remaining = x.turns;
-      x.appliedActions = 0;
-      x.active = false;
-      effArr[x.receiver - 1].push(x);
-      flags[x.receiver - 1].push(`${x.giver}→${x.receiver}`);
+      const e = q[qi];
+      eff[e.receiver - 1].push({ ...e, rem: e.turns, applied: 0 });
+      flags[e.receiver - 1].push(`${e.giver}→${e.receiver}`);
       qi++;
     }
-
-    // compute AV increments
     for (let i = 0; i < 10; i++) {
       let delta = 0;
-      effArr[i].forEach(x => {
-        if (x.remaining > 0 && x.active) {
-          if (x.type === 'Heavy') {
-            delta -= Math.floor(base[i] * 0.3);
-          } else if (x.type === 'Buff') {
-            delta += Math.floor(base[i] * x.value);
-          } else if (x.type === 'AV') {
-            delta += x.value;
+      eff[i].forEach(x => {
+        if (x.rem > 0) {
+          const same = x.step === step;
+          let apply = false;
+          if (same) {
+            if (x.giver === x.receiver) {
+              if (x.applied > 0) apply = true;
+              x.applied++;
+            } else {
+              if (x.giver <= x.receiver) apply = true;
+            }
+          } else if (x.step < step) {
+            apply = true;
+          }
+          if (apply) {
+            if (x.type === 'Heavy') {
+              delta -= Math.floor(base[i] * 0.3);
+            } else if (x.type === 'Buff') {
+              delta += Math.floor(base[i] * x.value);
+            } else if (x.type === 'AV') {
+              delta += x.value;
+            }
+            x.rem--;
           }
         }
       });
       av[i] += base[i] + delta + 100;
     }
-
-    // render row
     const tr = document.createElement('tr');
     const tdStep = document.createElement('td');
     tdStep.textContent = step;
@@ -126,50 +123,23 @@ function simulate() {
       tr.appendChild(td);
     }
     tbody.appendChild(tr);
-
-    // resolve actions and effect activation
+    tr.querySelectorAll('td.action').forEach(cell => {
+      cell.onclick = () => {
+        const st = +cell.parentNode.firstChild.textContent;
+        const idx = Array.from(cell.parentNode.children).indexOf(cell);
+        openPanel(st, idx);
+      };
+    });
     const actors = [];
     for (let i = 0; i < 10; i++) {
       if (av[i] >= 1000) actors.push({ idx: i, av: av[i] });
     }
     actors.sort((a, b) => b.av - a.av || a.idx - b.idx);
-
     actors.forEach(a => {
-      // reset AV
       av[a.idx] = 0;
-
-      effArr[a.idx].forEach(x => {
-        const same = x.step === step;
-        const isSelf = x.giver === x.receiver && x.receiver === a.idx + 1;
-        const isOtherEarly = x.giver <= x.receiver && x.receiver === a.idx + 1;
-
-        // activation logic
-        if (!x.active) {
-          if (isSelf) {
-            // self: activate on second action
-            if (x.appliedActions > 0) x.active = true;
-            x.appliedActions++;
-          } else if (same && isOtherEarly) {
-            x.active = true;
-          } else if (!same && x.step < step && x.receiver === a.idx + 1) {
-            x.active = true;
-          }
-        }
-
-        // decrement remaining on action
-        if (x.active) {
-          x.remaining--;
-          if (x.remaining <= 0) {
-            x.active = false;
-          }
-        }
+      eff[a.idx].forEach(x => {
+        if (x.rem > 0) x.rem--;
       });
-    });
-
-    // attach click
-    tr.querySelectorAll('td.action').forEach(cell => {
-      const idx = Array.from(cell.parentNode.children).indexOf(cell) - 1;
-      cell.onclick = () => openPanel(step, idx + 1);
     });
   }
 
