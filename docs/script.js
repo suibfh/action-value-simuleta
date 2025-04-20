@@ -44,9 +44,19 @@ document.getElementById('panelAdd').addEventListener('click', () => {
   const type = document.getElementById('panelType').value;
   const value = n('panelVal'),
         turns = n('panelTurns');
-  const o = { step, type, giver, receiver, value, turns };
-  queue.push(o);
-  addRow(o);
+  const effObj = {
+    step,
+    type,
+    giver,
+    receiver,
+    value,
+    turns,
+    remaining: turns,
+    appliedActions: 0,
+    active: false
+  };
+  queue.push(effObj);
+  addRow(effObj);
   closePanel();
 });
 
@@ -54,13 +64,12 @@ document.getElementById('simulate').addEventListener('click', simulate);
 
 function simulate() {
   const startY = window.scrollY;
-  // Read base AGI values from inputs
   const base = [];
   for (let i = 1; i <= 10; i++) {
     const v = n('agi' + i);
     base.push(v !== null ? v : 0);
   }
-  const eff = Array.from({ length: 10 }, () => []);
+  const effArr = Array.from({ length: 10 }, () => []);
   const av = new Array(10).fill(0);
   const tbody = document.querySelector('#log-table tbody');
   tbody.innerHTML = '';
@@ -70,42 +79,36 @@ function simulate() {
 
   for (let step = 1; step <= 50; step++) {
     const flags = Array.from({ length: 10 }, () => []);
+
+    // Enqueue effects at correct step
     while (qi < q.length && q[qi].step === step) {
-      const e = q[qi];
-      eff[e.receiver - 1].push({ ...e, rem: e.turns, applied: 0 });
-      flags[e.receiver - 1].push(`${e.giver}→${e.receiver}`);
+      const x = Object.assign({}, q[qi]);
+      x.remaining = x.turns;
+      x.appliedActions = 0;
+      x.active = false;
+      effArr[x.receiver - 1].push(x);
+      flags[x.receiver - 1].push(`${x.giver}→${x.receiver}`);
       qi++;
     }
+
+    // Compute AV increments
     for (let i = 0; i < 10; i++) {
       let delta = 0;
-      eff[i].forEach(x => {
-        if (x.rem > 0) {
-          const same = x.step === step;
-          let apply = false;
-          if (same) {
-            if (x.giver === x.receiver) {
-              if (x.applied > 0) apply = true;
-              x.applied++;
-            } else {
-              if (x.giver <= x.receiver) apply = true;
-            }
-          } else if (x.step < step) {
-            apply = true;
-          }
-          if (apply) {
-            if (x.type === 'Heavy') {
-              delta -= Math.floor(base[i] * 0.3);
-            } else if (x.type === 'Buff') {
-              delta += Math.floor(base[i] * x.value);
-            } else if (x.type === 'AV') {
-              delta += x.value;
-            }
-            x.rem--;
+      effArr[i].forEach(x => {
+        if (x.remaining > 0 && x.active) {
+          if (x.type === 'Heavy') {
+            delta -= Math.floor(base[i] * 0.3);
+          } else if (x.type === 'Buff') {
+            delta += Math.floor(base[i] * x.value);
+          } else if (x.type === 'AV') {
+            delta += x.value;
           }
         }
       });
       av[i] += base[i] + delta + 100;
     }
+
+    // Render row
     const tr = document.createElement('tr');
     const tdStep = document.createElement('td');
     tdStep.textContent = step;
@@ -123,25 +126,59 @@ function simulate() {
       tr.appendChild(td);
     }
     tbody.appendChild(tr);
-    tr.querySelectorAll('td.action').forEach(cell => {
-      cell.onclick = () => {
-        const st = +cell.parentNode.firstChild.textContent;
-        const idx = Array.from(cell.parentNode.children).indexOf(cell);
-        openPanel(st, idx);
-      };
-    });
+
+    // Handle action resolution and effect activation/decrement
     const actors = [];
     for (let i = 0; i < 10; i++) {
       if (av[i] >= 1000) actors.push({ idx: i, av: av[i] });
     }
+    // Sort by AV desc, then idx asc
     actors.sort((a, b) => b.av - a.av || a.idx - b.idx);
+
     actors.forEach(a => {
+      // Reset AV
       av[a.idx] = 0;
-      eff[a.idx].forEach(x => {
-        if (x.rem > 0) x.rem--;
+
+      // Update effects for this actor
+      effArr[a.idx].forEach(x => {
+        const same = x.step === step;
+        const isGiver = x.giver - 1 === a.idx;
+        const isReceiver = x.receiver - 1 === a.idx;
+
+        // Activation logic
+        if (!x.active) {
+          if (same) {
+            if (!isGiver && isReceiver && x.giver <= x.receiver) {
+              x.active = true;
+            }
+          } else if (x.step < step && isReceiver) {
+            x.active = true;
+          }
+        }
+
+        // Decrement remaining on each action if active
+        if (x.active) {
+          x.appliedActions++;
+          if (x.appliedActions <= x.turns) {
+            x.remaining--;
+          }
+          if (x.remaining <= 0) {
+            x.active = false;
+          }
+        }
       });
+    });
+
+    // Attach click listener for new action cells
+    tr.querySelectorAll('td.action').forEach(cell => {
+      cell.onclick = () => {
+        const st = +cell.parentNode.firstChild.textContent;
+        const idx = Array.from(cell.parentNode.children).indexOf(cell);
+        openPanel(st, idx + 1);
+      };
     });
   }
 
+  // Restore scroll
   window.scrollTo({ top: startY, behavior: 'auto' });
 }
