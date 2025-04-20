@@ -62,10 +62,11 @@ function togglePanelFields(){
 document.getElementById('panelClose').addEventListener('click', closePanel);
 document.getElementById('panelType').addEventListener('change', togglePanelFields);
 document.getElementById('panelAdd').addEventListener('click', ()=>{
-  const step=n('panelStep'), unit=n('panelGiver');
+document.getElementById('panelAdd').addEventListener('click', ()=>{
+  const step=n('panelStep'), unit=n('panelUnit');
   const type=document.getElementById('panelType').value;
   const value=n('panelVal'), turns=n('panelTurns');
-  const obj={step,type,unit,value,turns};
+  const obj={step,type,unit,value,turns,remaining:turns,appliedActions:0,active:false};
   queue.push(obj); addRow(obj); closePanel();
 });
 
@@ -73,26 +74,51 @@ document.getElementById('simulate').addEventListener('click', simulate);
 
 function simulate(){
   const startY=window.scrollY;
-  const base=[]; for(let i=1;i<=10;i++){base.push(n('agi'+i)||0);}
+  const base=[]; for(let i=1;i<=10;i++){const v=parseInt(document.getElementById('agi'+i).value,10); base.push(isNaN(v)?0:v);} 
   const eff=Array.from({length:10},()=>[]);
   const av=new Array(10).fill(0);
   const tbody=document.querySelector('#log-table tbody'); tbody.innerHTML='';
-  const q=[...queue].sort((a,b)=>a.step-b.step);
-  let qi=0;
+  const q=[...queue].sort((a,b)=>a.step-b.step); let qi=0;
   for(let step=1;step<=50;step++){
-    const flags = Array.from({length:10},()=>[]);
-    while(qi<q.length && q[qi].step===step){
+    // enqueue effects
+    while(qi<q.length&&q[qi].step===step){
       const e=q[qi];
-      if(e.type==='Buff'){
-        // skip first computation for self-buff
-        eff[e.receiver-1].push({type:'Buff',value:e.value/100,rem:e.turns,skipFirst:true});
-        flags[e.receiver-1].push('B');
-      } else if(e.type==='Heavy'){
-        eff[e.receiver-1].push({type:'Heavy',rem:e.turns});
-        flags[e.receiver-1].push('H');
-      } else if(e.type==='AV'){
-        av[e.unit-1]+=e.value;
-        flags[e.receiver-1].push('A');
+      eff[e.unit-1].push({...e,remaining:e.turns,appliedActions:0,active:false});
+      qi++;
+    }
+    // compute
+    for(let i=0;i<10;i++){
+      let delta=0;
+      eff[i].forEach(x=>{
+        if(x.active&&x.remaining>0){
+          if(x.type==='Buff') delta+=Math.floor(base[i]*x.value);
+          else if(x.type==='Heavy') delta-=Math.floor(base[i]*0.3);
+          else if(x.type==='AV') delta+=x.value;
+        }
+      });
+      av[i]+=base[i]+delta+100;
+    }
+    // determine actors
+    const actors=[];
+    for(let i=0;i<10;i++){if(av[i]>=1000) actors.push({idx:i,av:av[i]});}
+    actors.sort((a,b)=>b.av-a.av||a.idx-b.idx);
+    // apply effects on action
+    actors.forEach(a=>{
+      av[a.idx]=0;
+      eff[a.idx].forEach(x=>{
+        const same=x.step===step;
+        const isSelf=x.unit-1===a.idx;
+        const isOther=x.unit<=a.idx+1&&x.unit-1!==a.idx;
+        if(!x.active){
+          if(isSelf){ x.active=true; }
+          else if(same&&isOther){ x.active=true; }
+          else if(!same&&x.step<step){ x.active=true; }
+        }
+        if(x.active&&x.remaining>0){ x.remaining--; }
+      });
+    });
+  }
+  window.scrollTo({top:startY,behavior:'auto'});
       }
       qi++;
     }
