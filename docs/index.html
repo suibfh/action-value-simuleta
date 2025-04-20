@@ -34,7 +34,7 @@
           <h2>Effects Queue</h2>
           <table id="queueTable">
             <thead>
-              <tr><th>Step</th><th>Type</th><th>Unit</th><th>Value</th><th>Turns</th><th></th></tr>
+              <tr><th>Step</th><th>Type</th><th>Giver</th><th>Receiver</th><th>Value</th><th>Turns</th><th></th></tr>
             </thead>
             <tbody></tbody>
           </table>
@@ -57,7 +57,8 @@
       <button type="button" id="panelClose" class="close">✕</button>
       <h3>Add Effect</h3>
       <label>Step: <input type="number" id="panelStep" readonly /></label>
-      <label>Unit: <input type="number" id="panelUnit" /></label>
+      <label>Giver: <input type="number" id="panelGiver" readonly /></label><br>
+      <label>Receiver: <input type="number" id="panelReceiver" /></label /></label>
       <label>Type:
         <select id="panelType">
           <option value="Buff">AGI Buff</option>

@@ -62,7 +62,7 @@ function togglePanelFields(){
 document.getElementById('panelClose').addEventListener('click', closePanel);
 document.getElementById('panelType').addEventListener('change', togglePanelFields);
 document.getElementById('panelAdd').addEventListener('click', ()=>{
-  const step=n('panelStep'), unit=n('panelUnit');
+  const step=n('panelStep'), unit=n('panelGiver');
   const type=document.getElementById('panelType').value;
   const value=n('panelVal'), turns=n('panelTurns');
   const obj={step,type,unit,value,turns};
@@ -85,14 +85,14 @@ function simulate(){
       const e=q[qi];
       if(e.type==='Buff'){
         // skip first computation for self-buff
-        eff[e.unit-1].push({type:'Buff',value:e.value/100,rem:e.turns,skipFirst:true});
-        flags[e.unit-1].push('B');
+        eff[e.receiver-1].push({type:'Buff',value:e.value/100,rem:e.turns,skipFirst:true});
+        flags[e.receiver-1].push('B');
       } else if(e.type==='Heavy'){
-        eff[e.unit-1].push({type:'Heavy',rem:e.turns});
-        flags[e.unit-1].push('H');
+        eff[e.receiver-1].push({type:'Heavy',rem:e.turns});
+        flags[e.receiver-1].push('H');
       } else if(e.type==='AV'){
         av[e.unit-1]+=e.value;
-        flags[e.unit-1].push('A');
+        flags[e.receiver-1].push('A');
       }
       qi++;
     }
