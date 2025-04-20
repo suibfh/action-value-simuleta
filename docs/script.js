@@ -80,7 +80,6 @@ function simulate() {
   for (let step = 1; step <= 50; step++) {
     const flags = Array.from({ length: 10 }, () => []);
 
-    // Enqueue effects at correct step
     while (qi < q.length && q[qi].step === step) {
       const x = Object.assign({}, q[qi]);
       x.remaining = x.turns;
@@ -91,7 +90,6 @@ function simulate() {
       qi++;
     }
 
-    // Compute AV increments
     for (let i = 0; i < 10; i++) {
       let delta = 0;
       effArr[i].forEach(x => {
@@ -108,7 +106,6 @@ function simulate() {
       av[i] += base[i] + delta + 100;
     }
 
-    // Render row
     const tr = document.createElement('tr');
     const tdStep = document.createElement('td');
     tdStep.textContent = step;
@@ -127,25 +124,19 @@ function simulate() {
     }
     tbody.appendChild(tr);
 
-    // Handle action resolution and effect activation/decrement
     const actors = [];
     for (let i = 0; i < 10; i++) {
       if (av[i] >= 1000) actors.push({ idx: i, av: av[i] });
     }
-    // Sort by AV desc, then idx asc
     actors.sort((a, b) => b.av - a.av || a.idx - b.idx);
 
     actors.forEach(a => {
-      // Reset AV
       av[a.idx] = 0;
-
-      // Update effects for this actor
       effArr[a.idx].forEach(x => {
-        const same = x.step === step;
+        const same = x.step === a.step; // maintain original logic
         const isGiver = x.giver - 1 === a.idx;
         const isReceiver = x.receiver - 1 === a.idx;
 
-        // Activation logic
         if (!x.active) {
           if (same) {
             if (!isGiver && isReceiver && x.giver <= x.receiver) {
@@ -156,7 +147,6 @@ function simulate() {
           }
         }
 
-        // Decrement remaining on each action if active
         if (x.active) {
           x.appliedActions++;
           if (x.appliedActions <= x.turns) {
@@ -169,16 +159,14 @@ function simulate() {
       });
     });
 
-    // Attach click listener for new action cells
     tr.querySelectorAll('td.action').forEach(cell => {
+      const idx = Array.from(cell.parentNode.children).indexOf(cell) - 1;
       cell.onclick = () => {
         const st = +cell.parentNode.firstChild.textContent;
-        const idx = Array.from(cell.parentNode.children).indexOf(cell);
-        openPanel(st, idx + 1);
+        openPanel(st, idx + 1); // revert to original unit numbering
       };
     });
   }
 
-  // Restore scroll
   window.scrollTo({ top: startY, behavior: 'auto' });
 }
